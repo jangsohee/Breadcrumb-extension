@@ -1,2 +1,2 @@
-# Breadcrumb-extention
-SSM 25-1 Breadcrumb chrome extention
+# Breadcrumb-extension
+SSM 25-1 Breadcrumb chrome extension
