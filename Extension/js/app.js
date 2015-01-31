@@ -94,6 +94,8 @@
 
         $scope.curtab = [];
 
+
+        // 탭 활성화된 부분 캐치하는 부분
         chrome.tabs.onActivated.addListener(function(activeInfo){
             chrome.tabs.get(activeInfo.tabId, function(tab) {
                 $scope.$apply(function() {
@@ -101,6 +103,7 @@
                 });
             });
         });
+
 
         chrome.tabs.onCreated.addListener(function(newTab){
             var newNode = {
@@ -116,4 +119,33 @@
             });
         });
 	})
+})();
+
+
+// webNavigation Tester Module
+(function() {
+    var app = angular.module('navitest', []);
+
+    app.controller('NaviController', ['$scope', function ($scope) {
+
+        /*
+         webNavigation Start
+         */
+
+        $scope.committedInfo = [];
+
+        chrome.webNavigation.onCommitted.addListener(function(details) {
+            $scope.$apply(function() {
+                $scope.committedInfo.push(details);
+            });
+        });
+
+        $scope.createdNaviTarget = [];
+
+        chrome.webNavigation.onCreatedNavigationTarget.addListener(function(details) {
+            $scope.$apply(function() {
+                $scope.createdNaviTarget.push(details);
+            });
+        });
+    }]);
 })();

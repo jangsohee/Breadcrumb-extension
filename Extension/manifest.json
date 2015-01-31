@@ -15,7 +15,7 @@
 	"tabs",
     "activeTab",
     "https://ajax.googleapis.com/",
-    "clipboardWrite"
+    "webNavigation"
   ],
   "content_scripts": [
     {

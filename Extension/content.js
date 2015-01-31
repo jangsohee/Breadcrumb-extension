@@ -19,8 +19,8 @@ console.log(start_anchors + " vs " + end_anchors);
     TODO: 현재 outerText로 텍스트만 가져올 때 전부 다 제대로 못가져오는 현상이 있다.
  */
 function getHTML(){
-    // return document.documentElement.outerHTML;
-    return document.documentElement.outerText;
+    return document.documentElement.outerHTML;
+    // return document.documentElement.outerText;
 }
 
 $( document ).ready(function() {
@@ -32,6 +32,15 @@ $( document ).ready(function() {
 });
 
 
+/*
+    a 태그 추적 부분
+ */
+
+//var alertOnClick = function() {
+//    alert("Clicked!");
+//};
+//
+//$("a").on("click", alertOnClick);
 
 /*
 왜 DOMContentLoaded 이벤트는 감지가 안될까??
