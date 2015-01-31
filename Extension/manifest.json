@@ -14,12 +14,13 @@
   "permissions": [
 	"tabs",
     "activeTab",
-    "https://ajax.googleapis.com/"
+    "https://ajax.googleapis.com/",
+    "clipboardWrite"
   ],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"]
+      "js": ["js/jquery-1.11.2.min.js", "content.js"]
     }
   ]
 }
