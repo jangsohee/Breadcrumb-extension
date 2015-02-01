@@ -49,9 +49,9 @@
                                     <a class="pull-right btn btn-danger btn-xs" nodrag ng-click="remove(this)">
                                         <span class="glyphicon glyphicon-remove"></span>
                                     </a>
-                                    <a class="pull-right btn btn-primary btn-xs" nodrag ng-click="newSubItem(this)" style="margin-right: 8px;">
-                                        <span class="glyphicon glyphicon-plus"></span>
-                                    </a>
+                                    <!--<a class="pull-right btn btn-primary btn-xs" nodrag ng-click="newSubItem(this)" style="margin-right: 8px;">-->
+                                        <!--<span class="glyphicon glyphicon-plus"></span>-->
+                                    <!--</a>-->
                                 </div>
                                 <ol ui-tree-nodes ng-model="item.items" ng-class="{ 'hidden': collapsed }">
                                     <li ng-repeat="item in item.items" ui-tree-node ng-class="{ 'selected': selected, 'original': original }" ng-include="'items_renderer.html'"></li>
@@ -63,6 +63,16 @@
                                 </ol>
                             </ui-tree>
                         </div>
+                        <!--<div class="col-lg-6">-->
+                            <!--<div ng-repeat="tab in newTabQueue">-->
+                                <!--{{tab.id}}<br>-->
+                                <!--{{tab.tabId}}<br>-->
+                                <!--{{tab.title}}<br>-->
+                                <!--{{tab.url}}<br>-->
+                                <!--{{tab.keyword}}<br>-->
+                                <!--<br>-->
+                            <!--</div>-->
+                        <!--</div>-->
 
                         <!--<div class="col-lg-6">-->
                             <!--<h4>Full tree</h4>-->

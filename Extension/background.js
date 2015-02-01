@@ -34,17 +34,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-// 페이지 소스 받는 부분
-var received_data;
 
-chrome.runtime.onMessage.addListener(
-    function(request, sender, sendResponse) {
-        console.log(sender.tab ?
-        "from a content script:" + sender.tab.url :
-            "from the extension");
-        if (request.data)
-        {
-            received_data = request.data;
-            sendResponse({message: "I've finished to receive your data."});
-        }
-    });

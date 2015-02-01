@@ -15,6 +15,7 @@
 
     <!-- Replace favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/test.css" />
     <link rel="shortcut icon" href="/favicon.ico">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
@@ -24,43 +25,105 @@
         <div class="col-md-12">
             <h4>Breadcrumb Test Page</h4>
             <div class="row" id="boundary">
-                <div class="col-lg-6">
-                    <h5>Testing Committed Listener</h5>
-                    <div id="logViewer1"  ng-repeat="curinfo in committedInfo">
-                        <h4 ng-if="curinfo.transitionType == 'typed' || curinfo.transitionType == 'generated' || curinfo.transitionType == 'link'">
-                            New pattern
-                        </h4>
-                        <div class="panel panel-danger">
-                            <p class="panel-body">
-                                <span class="label label-primary">tabId</span> {{curinfo.tabId}} <br>
-                                <span class="label label-primary">url</span> {{curinfo.url}} <br>
-                                <span class="label label-primary">processId</span> {{curinfo.processId}} <br>
-                                <span class="label label-primary">frameId</span> {{curinfo.frameId}} <br>
-                                <span class="label label-primary">transitionType</span> {{curinfo.transitionType}} <br>
-                                <span class="label label-primary">transitionQualifiers</span> {{curinfo.transitionQualifiers}} <br>
-                                <span class="label label-primary">timeStamp</span> {{curinfo.timeStamp}} <br>
-                            </p>
-                        </div>
-                    </div>
+                <div class="col-lg-12">
+                    {{received_data}}
                 </div>
-                <div class="col-lg-6">
-                    <h5>Testing onCreatedNavigationTarget</h5>
-                    <div id="logViewer2"  ng-repeat="naviTarget in createdNaviTarget">
+                <!--<div class="col-lg-3">-->
+                    <!--<h5>Testing Committed Listener</h5>-->
+                    <!--<div id="logViewer1"  ng-repeat="curinfo in committedInfo">-->
                         <!--<h4 ng-if="curinfo.transitionType == 'typed' || curinfo.transitionType == 'generated' || curinfo.transitionType == 'link'">-->
                             <!--New pattern-->
                         <!--</h4>-->
-                        <div class="panel panel-primary">
-                            <p class="panel-body">
-                                <span class="label label-primary">sourceTabId</span> {{naviTarget.sourceTabId}} <br>
-                                <span class="label label-primary">sourceProcessId</span> {{naviTarget.sourceProcessId}} <br>
-                                <span class="label label-primary">sourceFrameId</span> {{naviTarget.sourceFrameId}} <br>
-                                <span class="label label-primary">url</span> {{naviTarget.url}} <br>
-                                <span class="label label-primary">tabId</span> {{naviTarget.tabId}} <br>
-                                <span class="label label-primary">timeStamp</span> {{naviTarget.timeStamp}} <br>
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                        <!--<div class="panel panel-danger">-->
+                            <!--<p class="panel-body">-->
+                                <!--<span class="label label-primary">tabId</span> {{curinfo.tabId}} <br>-->
+                                <!--<span class="label label-primary">url</span> {{curinfo.url}} <br>-->
+                                <!--<span class="label label-primary">processId</span> {{curinfo.processId}} <br>-->
+                                <!--<span class="label label-primary">frameId</span> {{curinfo.frameId}} <br>-->
+                                <!--<span class="label label-primary">transitionType</span> {{curinfo.transitionType}} <br>-->
+                                <!--<span class="label label-primary">transitionQualifiers</span> {{curinfo.transitionQualifiers}} <br>-->
+                                <!--<span class="label label-primary">timeStamp</span> {{curinfo.timeStamp}} <br>-->
+                            <!--</p>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="col-lg-3">-->
+                    <!--<h5>Testing onCreatedNavigationTarget</h5>-->
+                    <!--<div id="logViewer2"  ng-repeat="naviTarget in createdNaviTarget">-->
+                        <!--&lt;!&ndash;<h4 ng-if="curinfo.transitionType == 'typed' || curinfo.transitionType == 'generated' || curinfo.transitionType == 'link'">&ndash;&gt;-->
+                        <!--&lt;!&ndash;New pattern&ndash;&gt;-->
+                        <!--&lt;!&ndash;</h4>&ndash;&gt;-->
+                        <!--<div class="panel panel-primary">-->
+                            <!--<p class="panel-body">-->
+                                <!--<span class="label label-primary">sourceTabId</span> {{naviTarget.sourceTabId}} <br>-->
+                                <!--<span class="label label-primary">sourceProcessId</span> {{naviTarget.sourceProcessId}} <br>-->
+                                <!--<span class="label label-primary">sourceFrameId</span> {{naviTarget.sourceFrameId}} <br>-->
+                                <!--<span class="label label-primary">url</span> {{naviTarget.url}} <br>-->
+                                <!--<span class="label label-primary">tabId</span> {{naviTarget.tabId}} <br>-->
+                                <!--<span class="label label-primary">timeStamp</span> {{naviTarget.timeStamp}} <br>-->
+                            <!--</p>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="col-lg-3">-->
+                    <!--<h5>Testing onCreated</h5>-->
+                    <!--<div id="logViewer3"  ng-repeat="tab in createdTabs">-->
+                        <!--&lt;!&ndash;<h4 ng-if="curinfo.transitionType == 'typed' || curinfo.transitionType == 'generated' || curinfo.transitionType == 'link'">&ndash;&gt;-->
+                        <!--&lt;!&ndash;New pattern&ndash;&gt;-->
+                        <!--&lt;!&ndash;</h4>&ndash;&gt;-->
+                        <!--<div class="panel panel-warning">-->
+                            <!--<p class="panel-body">-->
+                                <!--<span class="label label-primary">tabId</span> {{tab.id}} <br>-->
+                                <!--<span class="label label-primary">openerTabId</span> {{tab.openerTabId}} <br>-->
+                                <!--<span class="label label-primary">tab</span> {{tab.url}} <br>-->
+                            <!--</p>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="col-lg-3">-->
+                    <!--<h5>Testing onUpdated</h5>-->
+                    <!--<div id="logViewer4"  ng-repeat="tab in changedTabs">-->
+                        <!--&lt;!&ndash;<h4 ng-if="curinfo.transitionType == 'typed' || curinfo.transitionType == 'generated' || curinfo.transitionType == 'link'">&ndash;&gt;-->
+                        <!--&lt;!&ndash;New pattern&ndash;&gt;-->
+                        <!--&lt;!&ndash;</h4>&ndash;&gt;-->
+                        <!--<div class="panel panel-success">-->
+                            <!--<p class="panel-body">-->
+                                <!--<span class="label label-primary">tabId</span> {{tab.tabId}} <br>-->
+                                <!--<span class="label label-primary">changes</span> {{tab.changes}} <br>-->
+                                <!--<span class="label label-primary">tab</span> {{tab.tab.url}} <br>-->
+                            <!--</p>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="col-lg-4">-->
+                    <!--<h5>Testing onTabReplaced</h5>-->
+                    <!--<div id="logViewer3"  ng-repeat="replacedTab in replacedTabs">-->
+                        <!--&lt;!&ndash;<h4 ng-if="curinfo.transitionType == 'typed' || curinfo.transitionType == 'generated' || curinfo.transitionType == 'link'">&ndash;&gt;-->
+                        <!--&lt;!&ndash;New pattern&ndash;&gt;-->
+                        <!--&lt;!&ndash;</h4>&ndash;&gt;-->
+                        <!--<div class="panel panel-success">-->
+                            <!--<p class="panel-body">-->
+                                <!--<span class="label label-primary">replacedTabId</span> {{replacedTab.replacedTabId}} <br>-->
+                                <!--<span class="label label-primary">tabId</span> {{replacedTab.tabId}} <br>-->
+                                <!--<span class="label label-primary">timeStamp</span> {{replacedTab.timeStamp}} <br>-->
+                            <!--</p>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="col-lg-4">-->
+                    <!--<h5>Testing onTabReplaced</h5>-->
+                    <!--<div id="logViewer3"  ng-repeat="replacedTab in replacedTabsObj">-->
+                        <!--&lt;!&ndash;<h4 ng-if="curinfo.transitionType == 'typed' || curinfo.transitionType == 'generated' || curinfo.transitionType == 'link'">&ndash;&gt;-->
+                        <!--&lt;!&ndash;New pattern&ndash;&gt;-->
+                        <!--&lt;!&ndash;</h4>&ndash;&gt;-->
+                        <!--<div class="panel panel-success">-->
+                            <!--<p class="panel-body">-->
+                                <!--<span class="label label-primary">added</span> {{replacedTab.add.url}} <br>-->
+                                <!--<span class="label label-primary">removed</span> {{replacedTab.remove.url}} <br>-->
+                            <!--</p>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
             </div>
 
         </div>
