@@ -4,7 +4,7 @@
 
 (function(){
 	var app = angular.module('histree', ['ui.tree']);
-	
+
 	app.controller('HistreeController', function($scope, $timeout, keys){
         $scope.parameters = {
             dragEnabled: true,
@@ -69,6 +69,8 @@
             });
         });
 
+
+
         $scope.newTabQueue = [];
         $scope.tabQueue = [];
         $scope.directQueue = [];
@@ -88,7 +90,7 @@
 
                 $scope.$apply(function(){
                     $scope.newTabQueue.push(newNode);
-                    $scope.list.push(newNode);
+                    pushChildToTree(newNode);
                 });
             }
         });
@@ -154,28 +156,11 @@
                         if(value.tabId == removedTabId) {
                             var callback = function (tab) {
                                 $scope.$apply(function () {
-                                    var target = $scope.newTabQueue[key];
-                                    target.title = tab.title;
-                                    target.url = tab.url;
-                                    target.tabId = tab.id;
-                                    $scope.tabQueue.push(target);
-                                    $scope.newTabQueue.splice(key, 1);
-                                });
-                            };
-                            chrome.tabs.get(addedTabId, callback);
-                        }
-                    });
-                });
-            }
-            if ($scope.directQueue.length > 0) {
-                $scope.$apply(function () {
-                    angular.forEach($scope.directQueue, function(value, key) {
-                        if(value.tabId == removedTabId) {
-                            var callback = function (tab) {
-                                $scope.$apply(function () {
                                     value.title = tab.title;
                                     value.url = tab.url;
                                     value.tabId = tab.id;
+                                    $scope.tabQueue.push(value);
+                                    $scope.newTabQueue.splice(key, 1);
                                 });
                             };
                             chrome.tabs.get(addedTabId, callback);
@@ -201,6 +186,26 @@
             }
         });
 
+        // 서비스로 분리하자
+        function pushChildToTree(newChildNode)
+        {
+            //var targetElement = document.querySelector("[ng-id='" + newChildNode.pid +"']");
+            if (newChildNode.pid == newChildNode.id) {
+                $scope.list.push(newChildNode);
+            }
+            else {
+                var targetElement = document.getElementById(newChildNode.pid);
+                if (targetElement) {
+                    var targetScope = angular.element(targetElement).scope();
+                    targetScope.$modelValue.items.push(newChildNode);
+                }
+                else {
+                    alert("Unknown Error // check your console...");
+                    console.log("ERROR :: cannot find parent tab.");
+                }
+            }
+        }
+
         chrome.webNavigation.onCreatedNavigationTarget.addListener(function(details) {
             if($scope.tabQueue.length > 0) {
                 $scope.$apply(function () {
@@ -218,8 +223,9 @@
                                         items: []
                                     };
 
+                                    pushChildToTree(newNode);
                                     $scope.tabQueue.push(newNode);
-                                    value.items.push(newNode);
+                                    //value.items.push(newNode);
                                 });
                             };
                             chrome.tabs.get(details.tabId, callback);
@@ -270,7 +276,7 @@
 
                                     value.tabId = 0; // 이전 탭 Id를 날린다.
 
-                                    $scope.tabQueue.push(newNode);
+                                    //$scope.tabQueue.push(newNode);
                                     $scope.directQueue.push(newNode);
                                     $scope.list.push(newNode);
                                 });
@@ -283,6 +289,8 @@
         });
 	})
 })();
+
+
 
 
 
