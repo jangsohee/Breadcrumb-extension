@@ -30,7 +30,7 @@ function makeTestUIPopup() {
 // 여기서는 왜 DOMContentLoaded가 감지 되는가?
 document.addEventListener('DOMContentLoaded', function() {
     makeUIPopup();
-    makeTestUIPopup();
+    //makeTestUIPopup();
 });
 
 

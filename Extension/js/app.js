@@ -18,8 +18,8 @@
             spacing: 20,
             coverage: 50,
             cancelKey: 'esc',
-            copyKey: 'shift',
-            selectKey: 'ctrl',
+            //copyKey: 'shift',
+            //selectKey: 'ctrl',
             enableExpandOnHover: true,
             expandOnHover: 500
         };
@@ -56,138 +56,48 @@
                 items: []
             });
         };
-
-        $scope.curtab = [];
-
-
-        // 탭 활성화된 부분 캐치하는 부분
-        chrome.tabs.onActivated.addListener(function(activeInfo){
-            chrome.tabs.get(activeInfo.tabId, function(tab) {
-                $scope.$apply(function() {
-                    $scope.curtab = tab;
-                });
-            });
-        });
+        
 
 
 
-        $scope.newTabQueue = [];
-        $scope.tabQueue = [];
-        $scope.directQueue = [];
+        // [서비스로 분리 부분]
+        function findTab(tabId) {
+            var newTab = $scope.newTabHash[tabId];
+            var tab = $scope.tabHash[tabId];
+            var directTab = $scope.directHash[tabId];
 
-        chrome.tabs.onCreated.addListener(function(newTab){
-            // 수동적으로 생성된 탭 생성 감지 부분
-            if (newTab.url == "chrome://newtab/") {
-                var newNode = {
-                    id: $scope.list.length + 1,
-                    pid: $scope.list.length + 1,
-                    tabId: newTab.id,
-                    title: newTab.title,
-                    url: newTab.url,
-                    keyword: null,
-                    items: []
-                };
-
-                $scope.$apply(function(){
-                    $scope.newTabQueue.push(newNode);
-                    pushChildToTree(newNode);
-                });
+            if (newTab) {
+                return {
+                    hash: 'newTabHash',
+                    node: newTab
+                }
             }
-        });
+            else if (tab) {
+                return {
+                    hash: 'tabHash',
+                    node: tab
+                }
+            }
+            else if (newTab) {
+                return {
+                    hash: 'directHash',
+                    node: directTab
+                }
+            }
+            else
+                return undefined;
+        }
 
-        chrome.tabs.onUpdated.addListener(function (tabId, changes, tab) {
-            // 수동 새 탭의 경우
-            if ($scope.newTabQueue.length > 0) {
-                 $scope.$apply(function() {
-                     angular.forEach($scope.newTabQueue, function(value, key) {
-                         if(value.tabId == tabId) {
-                             // 로딩 표시
-                             if(changes.status == "loading") {
-                                 value.title =  "[L] " + tab.title;
-                             }
-                             // 완료 부
-                             else if(changes.status == "complete") {
-                                 value.title = tab.title;
 
-                                 if(value.url != tab.url) {
-                                     value.url = tab.url;
-                                     $scope.tabQueue.push(value);
-                                     this.splice(key, 1);
-                                 }
-                             }
-                         }
-                     }, $scope.newTabQueue);
-                 });
+        function searchStringInArray (str, strArray) {
+            for (var j=0; j<strArray.length; j++) {
+                if (strArray[j].match(str)) return j;
             }
-            if($scope.tabQueue.length > 0) {
-                $scope.$apply(function() {
-                    angular.forEach($scope.tabQueue, function (value, key) {
-                        // onCreatedNavigationTarget으로 통한 자식일 경우 완료
-                        if(value.id != value.pid && value.tabId == tabId && changes.status == "complete") {
-                            value.title = tab.title;
-                            value.url = tab.url;
-                        }
-                        if(value.tabId == tabId && changes.status == "complete") {
-                            value.title = tab.title;
-                            value.url = tab.url;
-                        }
-                    }, $scope.tabQueue);
-                });
-            }
-            if($scope.directQueue.length > 0) {
-                $scope.$apply(function() {
-                    angular.forEach($scope.directQueue, function (value, key) {
-                        // 직접 접근한 경우 완료
-                        if(value.tabId == tabId && changes.status == "complete") {
-                            value.title = tab.title;
-                            value.url = tab.url;
-                        }
-                        $scope.directQueue.splice(key, 1);
-                    });
-                });
-            }
-        });
+            return -1;
+        }
 
-        chrome.tabs.onReplaced.addListener(function (addedTabId, removedTabId) {
-            // 수동 새 탭 경우 Replaced부
-            if ($scope.newTabQueue.length > 0) {
-                $scope.$apply(function () {
-                    angular.forEach($scope.newTabQueue, function(value, key) {
-                        if(value.tabId == removedTabId) {
-                            var callback = function (tab) {
-                                $scope.$apply(function () {
-                                    value.title = tab.title;
-                                    value.url = tab.url;
-                                    value.tabId = tab.id;
-                                    $scope.tabQueue.push(value);
-                                    $scope.newTabQueue.splice(key, 1);
-                                });
-                            };
-                            chrome.tabs.get(addedTabId, callback);
-                        }
-                    });
-                });
-            }
-            if ($scope.tabQueue.length > 0) {
-                $scope.$apply(function () {
-                    angular.forEach($scope.tabQueue, function(value, key) {
-                        if(value.tabId == removedTabId) {
-                            var callback = function (tab) {
-                                $scope.$apply(function () {
-                                    value.title = tab.title;
-                                    value.url = tab.url;
-                                    value.tabId = tab.id;
-                                });
-                            };
-                            chrome.tabs.get(addedTabId, callback);
-                        }
-                    });
-                });
-            }
-        });
 
-        // 서비스로 분리하자
-        function pushChildToTree(newChildNode)
+        function pushToTree(newChildNode)
         {
             //var targetElement = document.querySelector("[ng-id='" + newChildNode.pid +"']");
             if (newChildNode.pid == newChildNode.id) {
@@ -199,93 +109,359 @@
                     var targetScope = angular.element(targetElement).scope();
                     targetScope.$modelValue.items.push(newChildNode);
                 }
-                else {
-                    alert("Unknown Error // check your console...");
-                    console.log("ERROR :: cannot find parent tab.");
-                }
             }
         }
 
-        chrome.webNavigation.onCreatedNavigationTarget.addListener(function(details) {
-            if($scope.tabQueue.length > 0) {
-                $scope.$apply(function () {
-                    angular.forEach($scope.tabQueue, function (value, key) {
-                        if (value.tabId == details.sourceTabId) {
-                            var callback = function (tab) {
-                                $scope.$apply(function () {
-                                    var newNode = {
-                                        id: value.id * 10 + value.items.length,
-                                        pid: value.id,
-                                        tabId: tab.id,
-                                        title: "[Loading...]",
-                                        url: tab.url,
-                                        keyword: null,
-                                        items: []
-                                    };
 
-                                    pushChildToTree(newNode);
-                                    $scope.tabQueue.push(newNode);
-                                    //value.items.push(newNode);
-                                });
-                            };
-                            chrome.tabs.get(details.tabId, callback);
-                        }
-                    });
+        function popFromTree(removedNode)
+        {
+            var targetElement = document.getElementById(removedNode.id);
+            if (targetElement) {
+                var targetScope = angular.element(targetElement).scope();
+                var target = targetScope.$modelValue;
+                var position = $.inArray(target, $scope.list);
+                if ( ~position ) $scope.list.splice(position, 1);
+            }
+        }
+
+
+        // [초기화 부분]
+        // 탭 관리를 위한 Hash 선언
+        $scope.newTabHash = {};
+        $scope.tabHash = {};
+        $scope.directHash = {};
+
+        // 현재 탭 가져오기
+        chrome.tabs.query({}, function(tabArray){
+            $scope.$apply(function() {
+                angular.forEach(tabArray, function(value, key) {
+                    var newNode = {
+                        id: $scope.list.length + 1,
+                        pid: $scope.list.length + 1,
+                        tabId: value.id,
+                        title: value.title,
+                        url: value.url,
+                        keyword: null,
+                        state: 'complete',
+                        active: false,
+                        items: []
+                    };
+
+                    if (newNode.url == "chrome://newtab/")
+                        $scope.newTabHash[newNode.tabId] = newNode;
+                    else
+                        $scope.tabHash[newNode.tabId] = newNode;
+
+                    pushToTree(newNode);
+                });
+            });
+            
+        });
+
+
+        // 시작시 현재 탭 추적
+        chrome.tabs.getCurrent(function (tab){
+            $scope.$apply(function() {
+                $scope.curtab = $scope.tabHash[tab.id];
+
+                if($scope.curtab) {
+                    $scope.curtab.active = true;
+                    document.getElementById($scope.curtab.id).scrollIntoView();
+                }
+            });
+        });
+
+
+        // 탭 활성화된 부분 캐치하는 부분
+        chrome.tabs.onActivated.addListener(function(activeInfo){
+            // console.log("onActivated is fired.");
+            chrome.tabs.get(activeInfo.tabId, function(tab) {
+                // console.log("get in onActivated is fired.");
+                $scope.$apply(function() {
+                    // console.log("scope at get in onActivated is fired.");
+                    // console.log("Old tab judge...");
+                    // console.log($scope.curtab);
+                    if($scope.curtab) {
+                        // console.log("Old tab is. Set to false");
+                        $scope.curtab.active = false;
+                    }
+
+                    // console.log("find target...");
+                    var target = findTab(tab.id);
+                    // console.log(target);
+
+                    // console.log("target judge...");
+                    if(target) {
+                        // console.log("target is. Set to true.");
+                        target.node.active = true;
+                        $scope.curtab = target.node;
+                        //document.getElementById($scope.curtab.id).scrollIntoView();
+                    }
+                    else {
+                        // console.log("onActivated is fired. but undefined target... tabId : " + tab.id);
+                    }
+                });
+            });
+        });
+
+
+        // 탭 생성시 감지 부분
+        chrome.tabs.onCreated.addListener(function(newTab){
+            // 수동적으로 생성된 탭 생성 감지 부분
+            if (newTab.url == "chrome://newtab/") {
+                var newNode = {
+                    id: $scope.list.length + 1,
+                    pid: $scope.list.length + 1,
+                    tabId: newTab.id,
+                    title: newTab.title,
+                    url: newTab.url,
+                    keyword: null,
+                    state: 'start',
+                    active: true,
+                    items: []
+                };
+
+                $scope.$apply(function(){
+                    //$scope.curtab = newNode;
+                    $scope.newTabHash[newNode.tabId] = newNode;
+                    pushToTree(newNode);
+                });
+            }
+            else {
+                $scope.$apply(function () {
+                    var newNode = {
+                        id: $scope.curtab.id * 10 + $scope.curtab.items.length,
+                        pid: $scope.curtab.id,
+                        tabId: newTab.id,
+                        title: "[Loading...]",
+                        url: newTab.url,
+                        keyword: null,
+                        state: 'start',
+                        active: false,
+                        items: []
+                    };
+
+                    pushToTree(newNode);
+                    $scope.tabHash[newNode.tabId] = newNode;
                 });
             }
         });
 
-        function searchStringInArray (str, strArray) {
-            for (var j=0; j<strArray.length; j++) {
-                if (strArray[j].match(str)) return j;
-            }
-            return -1;
-        }
 
-        chrome.webNavigation.onCommitted.addListener(function(details) {
-            if($scope.tabQueue.length > 0) {
-                $scope.$apply(function () {
-                    angular.forEach($scope.tabQueue, function (value, key) {
-                        // onCreatedNavigationTarget으로 생성된 자식 탭 로딩 부
-                        if (value.tabId == details.tabId && details.transitionType == "link") {
-                            var callback = function (tab) {
-                                $scope.$apply(function () {
-                                    value.title = "[L] " + tab.title;
-                                    value.url = tab.url;
-                                });
-                            };
-                            chrome.tabs.get(details.tabId, callback);
+        // 탭 변화 감지부
+        chrome.tabs.onUpdated.addListener(function (tabId, changes, tab) {
+            // 수동 새 탭의 경우
+            var value = $scope.newTabHash[tabId];
+            if (value){
+                $scope.$apply(function() {
+                    if(changes.status == "loading") {
+                        value.title =  "[L] " + tab.title;
+                        value.state = changes.status;
+                    }
+                    // 완료 부
+                    else if(changes.status == "complete") {
+                        value.title = tab.title;
+                        value.state = changes.status;
+
+                        if(value.url != tab.url) {
+                            value.url = tab.url;
+                            $scope.tabHash[tabId] = value;
+                            $scope.newTabHash[tabId] = undefined; // debug
                         }
-                        // 주소창으로 직접 접근하는 경우
-                        if (value.tabId == details.tabId
-                            && ((details.transitionType == "typed"
-                            && searchStringInArray("from_address_bar", details.transitionQualifiers) != -1)
-                            || details.transitionType == "keyword"
-                            || details.transitionType == "generated")) {
-                            var callback = function (tab) {
-                                $scope.$apply(function () {
-                                    var newNode = {
-                                        id: $scope.list.length + 1,
-                                        pid: $scope.list.length + 1,
-                                        tabId: value.tabId,
-                                        title: "[L] " + tab.title,
-                                        url: tab.url,
-                                        keyword: null,
-                                        items: []
-                                    };
-
-                                    value.tabId = 0; // 이전 탭 Id를 날린다.
-
-                                    //$scope.tabQueue.push(newNode);
-                                    $scope.directQueue.push(newNode);
-                                    $scope.list.push(newNode);
-                                });
-                            };
-                            chrome.tabs.get(details.tabId, callback);
-                        }
-                    });
+                    }
                 });
             }
+
+            value = $scope.tabHash[tabId];
+            if (value){
+                $scope.$apply(function() {
+                    // onCreatedNavigationTarget으로 통한 자식일 경우 완료
+                    if(value.id != value.pid && changes.status == "complete") {
+                        value.title = tab.title;
+                        value.url = tab.url;
+                        value.state = changes.status;
+                    }
+                    // 어떤 탭이든 완료 경우
+                    if(changes.status == "complete") {
+                        value.title = tab.title;
+                        value.url = tab.url;
+                        value.state = changes.status;
+                    }
+                });
+            }
+
+            value = $scope.directHash[tabId];
+            if (value) {
+                $scope.$apply(function() {
+                    // 직접 접근한 경우 완료
+                    if(changes.status == "complete") {
+                        value.title = tab.title;
+                        value.url = tab.url;
+                        value.state = changes.status;
+                    }
+                    $scope.directHash[tabId] = undefined;
+                });
+            }
+        });
+
+
+        chrome.tabs.onReplaced.addListener(function (addedTabId, removedTabId) {
+            // 수동 새 탭 경우 Replaced부
+            var value = $scope.newTabHash[removedTabId];
+            if (value){
+                var callback = function (tab) {
+                    var value = $scope.newTabHash[removedTabId];
+
+                    value.title = tab.title;
+                    value.url = tab.url;
+                    value.tabId = tab.id;
+                    value.state = "replaced";
+                    $scope.tabHash[tab.id] = value;
+                    $scope.newTabHash[removedTabId] = undefined;
+                    $scope.$apply();
+                };
+                chrome.tabs.get(addedTabId, callback);
+            }
+
+            // 대체되는 탭이 존재한다면 (by instant page)
+            value = $scope.tabHash[removedTabId];
+            if (value) {
+                var callback = function (tab) {
+                    $scope.$apply(function () {
+                        value.title = tab.title;
+                        value.url = tab.url;
+                        value.tabId = tab.id;
+                        value.state = "replaced";
+                    });
+                };
+                chrome.tabs.get(addedTabId, callback);
+            }
+        });
+
+
+        // 링크로 파생된 탭 시작 부
+        chrome.webNavigation.onCreatedNavigationTarget.addListener(function(details) {
+            var value = $scope.tabHash[details.sourceTabId];
+            if(!$scope.tabHash[details.tabId] && value) {
+                var callback = function (tab) {
+                    $scope.$apply(function () {
+                        var newNode = {
+                            id: value.id * 10 + value.items.length,
+                            pid: value.id,
+                            tabId: tab.id,
+                            title: "[Loading...]",
+                            url: tab.url,
+                            keyword: null,
+                            state: 'start',
+                            active: false,
+                            items: []
+                        };
+
+                        pushToTree(newNode);
+                        $scope.tabHash[newNode.tabId] = newNode;
+                    });
+                };
+                chrome.tabs.get(details.tabId, callback);
+            }
+        });
+
+
+        // 탭 변화 감지부
+        chrome.webNavigation.onCommitted.addListener(function(details) {
+            var value = $scope.tabHash[details.tabId];
+            if (value) {
+                // 파생 판정
+                if (details.transitionType == "link") {
+                    var callback = function (tab) {
+                        $scope.$apply(function () {
+                            // onCreatedNavigationTarget으로 생성된 자식 탭 로딩 부
+                            if (value.state == "start") {
+                                value.title = "[L] " + tab.title;
+                                value.url = tab.url;
+                                value.state = "loading";
+                            }
+                            // 제자리 depth
+                            else {
+                                var newNode = {
+                                    id: $scope.list.length + 1,
+                                    pid: value.pid,
+                                    tabId: tab.id,
+                                    title: tab.title,
+                                    url: tab.url,
+                                    keyword: null,
+                                    state: 'start',
+                                    active: true,
+                                    items: []
+                                };
+
+                                value.tabId = 0;
+                                value.state = 'history';
+                                value.active = false;
+
+                                if (value.id == value.pid) {
+                                    newNode.pid = newNode.id;
+                                }
+
+                                $scope.curtab = newNode;
+                                pushToTree(newNode);
+                                $scope.tabHash[newNode.tabId] = newNode;
+                            }
+                        });
+                    };
+                    chrome.tabs.get(details.tabId, callback);
+                }
+                // 주소창으로 직접 접근하는 경우
+                if ((details.transitionType == "typed"
+                    && searchStringInArray("from_address_bar", details.transitionQualifiers) != -1)
+                    || details.transitionType == "keyword"
+                    || details.transitionType == "generated") {
+                    var callback = function (tab) {
+                        $scope.$apply(function () {
+                            var newNode = {
+                                id: $scope.list.length + 1,
+                                pid: $scope.list.length + 1,
+                                tabId: value.tabId,
+                                title: "[L] " + tab.title,
+                                url: tab.url,
+                                keyword: null,
+                                state: 'start',
+                                active: true,
+                                items: []
+                            };
+
+                            value.state = "history";
+                            value.tabId = 0; // 이전 탭 Id를 날린다.
+
+                            $scope.curtab = newNode;
+                            $scope.tabHash[newNode.tabId] = newNode;
+                            $scope.directHash[newNode.tabId] = newNode;
+                            pushToTree(newNode);
+                        });
+                    };
+                    chrome.tabs.get(details.tabId, callback);
+                }
+            }
+        });
+
+        // 탭 닫힘 구현
+        chrome.tabs.onRemoved.addListener(function (tabId) {
+            $scope.$apply(function() {
+                var target = findTab(tabId);
+
+                if (target) {
+                    if (target.hash == "newTabHash") {
+                        $scope.newTabHash[tabId] = undefined;
+                        popFromTree(target.node);
+                        target.node = undefined;
+                    }
+                    else {
+                        target.node.state = "history";
+                        target.node.active = false;
+                        target.node.tabId = 0;
+                        $scope[target.hash][tabId] = undefined;
+                    }
+                }
+            });
         });
 	})
 })();
@@ -367,7 +543,7 @@
         });
 
         chrome.webNavigation.onCompleted.addListener(function (details) {
-            console.log("Test");
+            
         });
 
 
@@ -376,9 +552,7 @@
 
         chrome.runtime.onMessage.addListener(
             function(request, sender, sendResponse) {
-                console.log(sender.tab ?
-                "from a content script:" + sender.tab.url :
-                    "from the extension");
+
                 if (request.data)
                 {
                     $scope.$apply(function() {

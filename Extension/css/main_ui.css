@@ -1,0 +1,12 @@
+.ng-hide {
+    display: none;
+}
+
+.active {
+    font-weight: bold;
+    color: red;
+}
+
+.history {
+    color: darkgray;
+}
