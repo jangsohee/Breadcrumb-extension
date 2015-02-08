@@ -20,7 +20,7 @@
 		<link rel="shortcut icon" href="/favicon.ico">
 		<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 	</head>
-	<body ng-app="histree" ng-controller="HistreeController">
+	<body ng-app="histree">
 <!-- <ng-controller="StoreController as store">
 <div ng-repeat="product in store.products" ng-hide="product.soldOut">
 	<h1>{{product.name}}</h1>
@@ -37,46 +37,64 @@
                 <div class="col-md-12">
                     <div class="row" id="boundary">
                         <div class="col-lg-4">
-                            <h4>Breadcrumb Test UI</h4>
-                            <h5>Current Tab : <a href="{{curtab.url}}">{{curtab.title}}</a></h5>
-                            <!-- Nested list template -->
-                            <script type="text/ng-template" id="items_renderer.html">
-                                <div ui-tree-handle ng-class="{ 'select': $treeScope.multiSelect, 'copy': $treeScope.copy }">
-                                    <div ng-mouseover="delBtn = true" ng-mouseleave="delBtn = false">
-                                        <a class="btn btn-success btn-xs" nodrag ng-click="toggle(this)">
-                                            <span class="glyphicon" ng-class="{ 'glyphicon-chevron-right': collapsed, 'glyphicon-chevron-down': !collapsed }"></span>
-                                        </a>
-                                        <span ng-class="{ 'active': item.active, 'history': item.state == 'history' }">
-                                        [{{item.id}} / {{item.pid}} / ({{item.tabId}}) / ({{item.state}}] {{item.title}}
-                                        </span>
-                                        <a class="pull-right btn btn-danger btn-xs" nodrag ng-click="remove(this)" ng-show="delBtn">
-                                            <span class="glyphicon glyphicon-remove"></span>
-                                        </a>
+                            <div ng-controller="LoginController" class="ng-scope container col">
+                                <h4>
+                                    Breadcrumb Test UI
+                                    <div class="pull-right">
+                                        <button class="btn btn-primary" ng-click="showLoginForm()">Login</button>
+                                        <button class="btn btn-primary" ng-click="showOptionForm()">Option</button>
+                                        <!--<button ng-click="toggleLoginModal()" class="btn btn-default">Login</button>-->
+                                        <!--<button ng-click="toggleOptModal()" class="btn btn-default">Option</button>-->
                                     </div>
-                                    <!--<a class="pull-right btn btn-primary btn-xs" nodrag ng-click="newSubItem(this)" style="margin-right: 8px;">-->
-                                        <!--<span class="glyphicon glyphicon-plus"></span>-->
-                                    <!--</a>-->
-                                </div>
-                                <ol ui-tree-nodes ng-model="item.items" ng-class="{ 'hidden': collapsed }">
-                                    <li id="{{item.id}}" ng-repeat="item in item.items" ui-tree-node ng-class="{ 'selected': selected, 'original': original }" ng-include="'items_renderer.html'"></li>
-                                </ol>
-                            </script>
-                            <ui-tree callbacks="callbacks" drag-enabled="parameters.dragEnabled" empty-placeholder-enabled="parameters.emptyPlaceholderEnabled" max-depth="parameters.maxDepth" drag-delay="parameters.dragDelay" drag-distance="parameters.dragDistance" lock-x="parameters.lockX" lock-y="parameters.lockY" bound-to="parameters.boundTo" spacing="parameters.spacing" coverage="parameters.coverage" cancel-key="parameters.cancelKey" copy-key="parameters.copyKey" select-key="parameters.selectKey" expand-on-hover="(parameters.enableExpandOnHover) ? parameters.expandOnHover : parameters.enableExpandOnHover">
-                                <ol ui-tree-nodes ng-model="list">
-                                    <li id="{{item.id}}" ng-repeat="item in list" ui-tree-node ng-class="{ 'selected': selected, 'original': original }" ng-include="'items_renderer.html'"></li>
-                                </ol>
-                            </ui-tree>
-                        </div>
+                                </h4>
+                            </div>
 
-                        <div class="col-lg-4">
-                            <h4>Full tree</h4>
-                            <pre class="code">{{ list | json }}</pre>
-                        </div>
-                        <div class="col-lg-4">
-                            <h4>Hashes</h4>
-                            <pre class="code">{{ newTabHash | json }}</pre>
-                            <pre class="code">{{ tabHash | json }}</pre>
-                            <pre class="code">{{ directHash | json }}</pre>
+                            <div ng-controller="HistreeController">
+                                <!--<h5>Current Tab : <a href="{{curtab.url}}">{{curtab.title}}</a></h5>-->
+
+                                <!-- Nested list template -->
+                                <script type="text/ng-template" id="items_renderer.html">
+                                    <div ui-tree-handle ng-class="{ 'select': $treeScope.multiSelect, 'copy': $treeScope.copy }">
+                                        <div title='{{child.title}}' ng-mouseover="delBtn = true" ng-mouseleave="delBtn = false">
+                                            <a class="btn btn-success btn-xs" ng-show="child.children.length" nodrag ng-click="toggle(this)">
+                                                <span class="glyphicon font-size" ng-class="{ 'glyphicon-chevron-right': collapsed, 'glyphicon-chevron-down': !collapsed }"></span>
+                                            </a>
+                                            <img src="./img/loading_icon.gif" width="16" height="16" ng-show="child.state == 'loading'">
+                                            <img src="./img/history.png" width="16" height="16" ng-show="child.state != 'loading' && child.favicon == 'history.png'">
+                                            <img src="{{child.favicon}}" width="16" height="16" ng-show="child.state != 'loading' && child.favicon != 'history.png'">
+                                            <span ng-class="{ 'active': child.active, 'history': child.state == 'history' }">
+                                            <!-- {{child._id}} / {{child.parent}} / ({{child.tabId}}) /  [{{child.state}}] -->
+                                               {{child.title | limitTo: 20}}
+                                            </span>
+                                            <a class="pull-right btn btn-danger btn-xs" nodrag ng-click="remove(this)" ng-show="delBtn">
+                                                <span class="glyphicon glyphicon-remove"></span>
+                                            </a>
+                                        </div>
+                                        <!--<a class="pull-right btn btn-primary btn-xs" nodrag ng-click="newSubchild(this)" style="margin-right: 8px;">-->
+                                            <!--<span class="glyphicon glyphicon-plus"></span>-->
+                                        <!--</a>-->
+                                    </div>
+                                    <ol ui-tree-nodes ng-model="child.children" ng-class="{ 'hidden': collapsed }">
+                                        <li id="{{child._id}}" ng-repeat="child in child.children" ui-tree-node ng-class="{ 'selected': selected, 'original': original }" ng-include="'items_renderer.html'"></li>
+                                    </ol>
+                                </script>
+                                <ui-tree callbacks="callbacks" drag-enabled="parameters.dragEnabled" empty-placeholder-enabled="parameters.emptyPlaceholderEnabled" max-depth="parameters.maxDepth" drag-delay="parameters.dragDelay" drag-distance="parameters.dragDistance" lock-x="parameters.lockX" lock-y="parameters.lockY" bound-to="parameters.boundTo" spacing="parameters.spacing" coverage="parameters.coverage" cancel-key="parameters.cancelKey" copy-key="parameters.copyKey" select-key="parameters.selectKey" expand-on-hover="(parameters.enableExpandOnHover) ? parameters.expandOnHover : parameters.enableExpandOnHover">
+                                    <ol ui-tree-nodes ng-model="list">
+                                        <li id="{{child._id}}" ng-repeat="child in list" ui-tree-node ng-class="{ 'selected': selected, 'original': original }" ng-include="'items_renderer.html'"></li>
+                                    </ol>
+                                </ui-tree>
+
+                                <!--<div class="col-lg-4">-->
+                                    <!--<h4>Full tree</h4>-->
+                                    <!--<pre class="code">{{ list | json }}</pre>-->
+                                <!--</div>-->
+                                <!--<div class="col-lg-4">-->
+                                    <!--<h4>Hashes</h4>-->
+                                    <!--<pre class="code">{{ newTabHash | json }}</pre>-->
+                                    <!--<pre class="code">{{ tabHash | json }}</pre>-->
+                                    <!--<pre class="code">{{ directHash | json }}</pre>-->
+                                <!--</div>-->
+                            </div>
                         </div>
                     </div>
 
@@ -90,5 +108,8 @@
         <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
 		<script type="text/javascript" src="js/app.js"></script>
 		<script type="text/javascript" src="js/angular-ui-tree/angular-ui-tree.js"></script>
+        <script type="text/javascript" src="js/ui-bootstrap-tpls-0.12.0.min.js"></script>
+        <script type="text/javascript" src="js/bootstrap.min.js"></script>
+
 	</body>
 </html>
