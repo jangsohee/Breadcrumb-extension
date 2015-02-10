@@ -13,7 +13,7 @@
         <!-- PASSWORD -->
         <div class="form-group">
             <label>Password</label>
-            <input type="password" name="password" class="form-control" ng-model="account.password" ng-minlength="8" ng-maxlength="20" required>
+            <input type="password" name="password" class="form-control" ng-model="account.password" ng-minlength="4" ng-maxlength="40" required>
             <p ng-show="form.loginForm.password.$error.minlength" class="help-block">Password is too short.</p>
             <p ng-show="form.loginForm.password.$error.maxlength" class="help-block">Password is too long.</p>
         </div>
@@ -21,8 +21,8 @@
 
     </div>
     <div class="modal-footer">
-        <button class="btn btn-primary" ng-click="showSignForm()">Create Account</button>
+        <button type="button" class="btn btn-primary" ng-click="showSignForm()">Sign up</button>
         <button type="submit" class="btn btn-primary" ng-disabled="form.loginForm.$invalid">Login</button>
-        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+        <!--<button class="btn btn-warning" ng-click="cancel()">Cancel</button>-->
     </div>
 </form>

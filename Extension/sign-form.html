@@ -1,7 +1,7 @@
 <div class="modal-header">
     <h3>Create A New Account!</h3>
 </div>
-<form name="form.signForm" ng-submit="submitForm()" novalidate>
+<form name="form.signForm" ng-submit="signSubmitForm()" novalidate>
     <div class="modal-body">
         <!-- EMAIL -->
         <div class="form-group">
@@ -20,7 +20,7 @@
         <!-- PASSWORD -->
         <div class="form-group">
             <label>Password</label>
-            <input type="password" name="password" class="form-control" ng-model="account.password" ng-minlength="8" ng-maxlength="20" required>
+            <input type="password" name="password" class="form-control" ng-model="account.password" ng-minlength="4" ng-maxlength="40" required>
             <p ng-show="form.signForm.password.$error.minlength" class="help-block">Password is too short.</p>
             <p ng-show="form.signForm.password.$error.maxlength" class="help-block">Password is too long.</p>
         </div>
@@ -28,7 +28,7 @@
 
     </div>
     <div class="modal-footer">
-        <button type="submit" class="btn btn-primary" ng-disabled="form.signForm.$invalid">OK</button>
-        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+        <button type="submit" class="btn btn-primary" ng-disabled="form.signForm.$invalid">{{btnLabel}}</button>
+        <button type="button" class="btn btn-warning" ng-click="cancel()">Cancel</button>
     </div>
 </form>

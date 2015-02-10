@@ -39,9 +39,9 @@
                         <div class="col-lg-4">
                             <div ng-controller="LoginController" class="ng-scope container col">
                                 <h4>
-                                    Breadcrumb Test UI
+                                    Breadcrumb UI
                                     <div class="pull-right">
-                                        <button class="btn btn-primary" ng-click="showLoginForm()">Login</button>
+                                        <button class="btn btn-warning" ng-click="Logout()">Logout</button>
                                         <button class="btn btn-primary" ng-click="showOptionForm()">Option</button>
                                         <!--<button ng-click="toggleLoginModal()" class="btn btn-default">Login</button>-->
                                         <!--<button ng-click="toggleOptModal()" class="btn btn-default">Option</button>-->
@@ -64,7 +64,7 @@
                                             <img src="{{child.favicon}}" width="16" height="16" ng-show="child.state != 'loading' && child.favicon != 'history.png'">
                                             <span ng-class="{ 'active': child.active, 'history': child.state == 'history' }">
                                             <!-- {{child._id}} / {{child.parent}} / ({{child.tabId}}) /  [{{child.state}}] -->
-                                               {{child.title | limitTo: 20}}
+                                               {{child.title | limitTo: 30}}
                                             </span>
                                             <a class="pull-right btn btn-danger btn-xs" nodrag ng-click="remove(this)" ng-show="delBtn">
                                                 <span class="glyphicon glyphicon-remove"></span>
@@ -78,7 +78,7 @@
                                         <li id="{{child._id}}" ng-repeat="child in child.children" ui-tree-node ng-class="{ 'selected': selected, 'original': original }" ng-include="'items_renderer.html'"></li>
                                     </ol>
                                 </script>
-                                <ui-tree callbacks="callbacks" drag-enabled="parameters.dragEnabled" empty-placeholder-enabled="parameters.emptyPlaceholderEnabled" max-depth="parameters.maxDepth" drag-delay="parameters.dragDelay" drag-distance="parameters.dragDistance" lock-x="parameters.lockX" lock-y="parameters.lockY" bound-to="parameters.boundTo" spacing="parameters.spacing" coverage="parameters.coverage" cancel-key="parameters.cancelKey" copy-key="parameters.copyKey" select-key="parameters.selectKey" expand-on-hover="(parameters.enableExpandOnHover) ? parameters.expandOnHover : parameters.enableExpandOnHover">
+                                <ui-tree callbacks="test" drag-enabled="parameters.dragEnabled" empty-placeholder-enabled="parameters.emptyPlaceholderEnabled" max-depth="parameters.maxDepth" drag-delay="parameters.dragDelay" drag-distance="parameters.dragDistance" lock-x="parameters.lockX" lock-y="parameters.lockY" bound-to="parameters.boundTo" spacing="parameters.spacing" coverage="parameters.coverage" cancel-key="parameters.cancelKey" copy-key="parameters.copyKey" select-key="parameters.selectKey" expand-on-hover="(parameters.enableExpandOnHover) ? parameters.expandOnHover : parameters.enableExpandOnHover">
                                     <ol ui-tree-nodes ng-model="list">
                                         <li id="{{child._id}}" ng-repeat="child in list" ui-tree-node ng-class="{ 'selected': selected, 'original': original }" ng-include="'items_renderer.html'"></li>
                                     </ol>
