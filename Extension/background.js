@@ -36,7 +36,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 chrome.browserAction.onClicked.addListener(function (tab) {
-    alert("Test");
     chrome.windows.getAll({'populate': true}, function (windows) {
         var i, j;
         for (i = 0; i < windows.length; i++) {

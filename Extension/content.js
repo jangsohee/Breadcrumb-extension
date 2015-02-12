@@ -7,10 +7,10 @@
     a 태그 카운터 부분
     TODO: a 태그 document 오브젝트에서 받아서 카운팅 해보기
  */
-var start_anchors = document.getElementsByTagName('a').length;
+//var start_anchors = document.getElementsByTagName('a').length;
 
-var end_anchors = document.anchors;
-console.log(start_anchors + " vs " + end_anchors);
+//var end_anchors = document.anchors;
+//console.log(start_anchors + " vs " + end_anchors);
 
 
 /*
@@ -27,9 +27,9 @@ function getHTML(){
 $( document ).ready(function() {
     // 소스 전달부
     chrome.runtime.sendMessage({data: getHTML()}, function(response) {
-        console.log(response.message);
+        //console.log(response.message);
     });
-    console.log("getHTML() is fired");
+    //console.log("getHTML() is fired");
 });
 
 
