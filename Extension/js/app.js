@@ -18,17 +18,17 @@
     //        return  {
     //
     //            log: function() {
-    //                console.log("SHADOW: ",arguments);
+    //                // dist version
     //            },
     //
     //            info: function(){},
     //
     //            error: function() {
-    //                console.log("SHADOW: ",arguments);
+    //                // dist version
     //            },
     //
     //            warn:function(){
-    //                console.log("SHADOW: ",arguments);
+    //                // dist version
     //            }
     //
     //        };
@@ -48,7 +48,7 @@
 
         var convertToServer = function (node) {
             if (!node._id || !node.title || !node.url) { // || !node.body  || !node.parent
-                alert("to convert node server form error");
+                // dist version
                 return undefined;
             }
 
@@ -70,7 +70,7 @@
 
         var convertToClient = function (sNode, node) {
             if (!node) {
-                alert("source node is empty.");
+                // dist version
                 return undefined;
             }
 
@@ -78,8 +78,7 @@
                 child.parent = node._id;
             }
 
-            if (sNode.parent && node.parent != sNode.parent)
-                alert("not match source and sNode!!");
+
 
             node.title = sNode.title;
             node.url = sNode.url;
@@ -93,7 +92,7 @@
         var requestNodeId = function (node) {
             // Error process
             if (!node) {
-                alert("to request node id to server error");
+                // dist version
                 return undefined;
             }
 
@@ -116,14 +115,14 @@
                     //sendNode(node);
                 }
                 else {
-                    alert('to get node Id from server success but unknown behavior.');
-                    console.log(JSON.stringify(data));
+                    // dist version
+                    // dist version
                 }
             });
 
 
             reqPromise.error(function (data, status, headers, config) {
-                console.log('to get node Id from server error :' + status);
+                // dist version
 
                 if (status == 404) {
                     // TODO: Error 404 Implement
@@ -132,10 +131,10 @@
                     // TODO: Error 422 Implement and Check code
                 }
                 else {
-                    console.log('to get node Id from server unknown error : ' + status);
+                    // dist version
                 }
 
-                console.log(JSON.stringify(data));
+                // dist version
             });
 
             return node;
@@ -147,7 +146,7 @@
             var sNode = convertToServer(node);
 
             if (!sNode) {
-                alert("to send node data to server error");
+                // dist version
                 return undefined;
             }
 
@@ -166,23 +165,23 @@
             reqPromise.success(function (data, status, headers, config) {
                 if (status == 201) {
                     var sNodeData = data.data;
-                    if(!convertToClient(sNodeData, node))
-                        alert("to convert to client node error.");
+                    convertToClient(sNodeData, node)
 
 
 
-                    //console.log("success to save into server");
-                    //console.log(data);
+
+                    //// dist version
+                    //// dist version
                 }
                 else {
-                    alert('to get Tree data success but unknown behavior.');
-                    console.log(JSON.stringify(data));
+                    // dist version
+                    // dist version
                 }
             });
 
 
             reqPromise.error(function (data, status, headers, config) {
-                alert('to send Node data error :' + status);
+                // dist version
 
                 if (status == 404) {
                     // TODO: Error 404 Implement
@@ -191,10 +190,10 @@
                     // TODO: Error 422 Implement and Check code
                 }
                 else {
-                    alert('to send Node data unknown error : ' + status);
+                    // dist version
                 }
 
-                console.log(JSON.stringify(data));
+                // dist version
             });
         };
 
@@ -202,7 +201,7 @@
         var shiftNode = function (nodeId, pnodeId, index) {
             // Error process
             if (!nodeId) {
-                alert("to shift node data to server error");
+                // dist version
                 return undefined;
             }
 
@@ -225,17 +224,17 @@
 
             reqPromise.success(function (data, status, headers, config) {
                 if (status == 201) {
-                    console.log("Success shift");
+                    // dist version
                 }
                 else {
-                    alert('to shift node data success but unknown behavior.');
-                    console.log(JSON.stringify(data));
+                    // dist version
+                    // dist version
                 }
             });
 
 
             reqPromise.error(function (data, status, headers, config) {
-                alert('to shift node data error :' + status);
+                // dist version
 
                 if (status == 404) {
                     // TODO: Error 404 Implement
@@ -244,10 +243,10 @@
                     // TODO: Error 422 Implement and Check code
                 }
                 else {
-                    alert('to shift node data unknown error : ' + status);
+                    // dist version
                 }
 
-                console.log(JSON.stringify(data));
+                // dist version
             });
         };
 
@@ -266,18 +265,18 @@
 
             reqPromise.success(function (data, status, headers, config) {
                 if (status == 201) {
-                    console.log("success to delete into server");
-                    //console.log(data);
+                    // dist version
+                    //// dist version
                 }
                 else {
-                    alert('to get Tree data success but unknown behavior.');
-                    console.log(JSON.stringify(data));
+                    // dist version
+                    // dist version
                 }
             });
 
 
             reqPromise.error(function (data, status, headers, config) {
-                alert('to delete Node data error :' + status);
+                // dist version
 
                 if (status == 404) {
                     // TODO: Error 404 Implement
@@ -286,10 +285,10 @@
                     // TODO: Error 422 Implement and Check code
                 }
                 else {
-                    alert('to delete Node data unknown error : ' + status);
+                    // dist version
                 }
 
-                console.log(JSON.stringify(data));
+                // dist version
             });
         };
 
@@ -298,7 +297,7 @@
             // Error process
             if (!token) {
                 alert("There is no token.");
-                console.log(token);
+                // dist version
                 return undefined;
             }
 
@@ -367,13 +366,13 @@
                         treeData.push(nodes[i]);
                     }
 
-                    alert("Success connect to server!");
+                    console.log("Success connect to server!");
 
                     // TODO: Loading Finish 구현부
                 }
                 else {
-                    alert('to get Tree data success but unknown behavior.');
-                    console.log(JSON.stringify(data));
+                    // dist version
+                    // dist version
                 }
 
                 mainCallback();
@@ -381,7 +380,7 @@
 
 
             reqPromise.error(function (data, status, headers, config) {
-                alert('to get Tree data error :' + status);
+                // dist version
 
                 treeData = undefined;
 
@@ -392,10 +391,10 @@
                     // TODO: Error 422 Implement and Check code
                 }
                 else {
-                    alert('to get Tree data unknown error : ' + status);
+                    // dist version
                 }
 
-                console.log(JSON.stringify(data));
+                // dist version
 
                 mainCallback();
             });
@@ -477,7 +476,7 @@
 
             //$scope.test = {
             //    remove: function () {
-            //        console.log("test");
+            //        // dist version
             //        return true;
             //    }
             //}
@@ -512,7 +511,7 @@
                         return true;
                     },
                     dropped: function (event) {
-                        console.log(event);
+                        // dist version
                         var srcNode = event.source.nodeScope.$modelValue;
                         var srcIndex = event.source.index;
                         var destNode = event.dest.nodesScope.$parent.$modelValue;
@@ -521,25 +520,25 @@
 
 
                         if (srcIndex == destIndex && event.dest.nodesScope == event.source.nodesScope) {
-                            //console.log("it's self direction");
+                            //// dist version
                         }
                         else {
                             if (event.dest.nodesScope.$nodeScope) {
                                 srcNode.parent = destNode._id;
-                                console.log("it's moved in another node");
+                                // dist version
                             }
                             // go to root
                             else {
                                 srcNode.parent = srcNode._id;
-                                console.log("it's moved in root node");
+                                // dist version
                             }
 
-                            //console.log(srcNode._id);
-                            //console.log(destNodeId);
-                            //console.log(destIndex);
+                            //// dist version
+                            //// dist version
+                            //// dist version
 
                             // [Breadcrumb]
-                            console.log("calling shiftNode");
+                            // dist version
                             Com.shiftNode(srcNode._id, destNodeId, destIndex);
                         }
                     }
@@ -547,15 +546,15 @@
 
 
                 $scope.removeNod = function (removeFunc, scope) {
-                    console.log(removeFunc);
-                    console.log(scope);
+                    // dist version
+                    // dist version
 
                     var targetScope = scope.$nodeScope;
                     var targetNode = targetScope.$modelValue;
                     var targetChildren = targetScope.$childNodesScope.$modelValue;
 
-                    console.log(targetNode);
-                    console.log(targetChildren);
+                    // dist version
+                    // dist version
 
                     // [Braedcrumb]
                     Com.deleteNode(targetNode._id);
@@ -672,7 +671,7 @@
                 function pushToTree(newNode) {
                     //var targetElement = document.querySelector("[ng-id='" + newChildNode.parent +"']");
 
-                    $log.debug("APPEND NODE TO LIST!!!!!!!!!!!!!!!!!!!!!!");
+                    // dist version
                     if (newNode.parent == newNode._id) {
                         $scope.list.push(newNode);
                     }
@@ -681,8 +680,7 @@
 
                         if (targetNode)
                             targetNode.children.push(newNode);
-                        else
-                            alert("to push node into tree error");
+
                     }
 
                     //if (newNode.active)
@@ -691,17 +689,17 @@
 
 
                 function popFromTree(removedNode) {
-                    $log.debug("popFromTree occured");
+                    // dist version
                     var targetElement = document.getElementById(removedNode._id);
-                    $log.debug(targetElement);
+                    // dist version
                     if (targetElement) {
                         var targetScope = angular.element(targetElement).scope();
-                        $log.debug(targetScope);
+                        // dist version
                         var target = targetScope.$modelValue;
-                        $log.debug(target);
+                        // dist version
 
                         var parentTarget = targetScope.$parentNodeScope.$modelValue;
-                        $log.debug(target);
+                        // dist version
 
                         //부모의 리스트에 있는 걸 splice하면
                         var position = $.inArray(target, parentTarget.children);
@@ -766,8 +764,8 @@
 
                 // 현재 탭 가져오기
                 chrome.tabs.query({}, function (tabArray) {
-                    $log.debug("Enter the chrome.tabs.query for getting Current Tab [tabArray]");
-                    $log.info(tabArray);
+                    // dist version
+                    // dist version
                     angular.forEach(tabArray, function (value, key) {
                         if (value.title != projectName && !value.url.match("chrome-devtools://")) {
                             var newNode = {
@@ -799,8 +797,8 @@
 
                             // [Breadcrumb]
                             chrome.tabs.reload(value.id);
-                            $log.debug("TEST QUERY");
-                            $log.debug(newNode.title);
+                            // dist version
+                            // dist version
                         }
                     });
 
@@ -812,8 +810,8 @@
 
                 // 시작시 현재 탭 추적
                 //chrome.tabs.getCurrent(function (tab) {
-                //    $log.debug("Enter the chrome.tabs.getCurrent for tracing Current Tab on startup [tab]");
-                //    $log.info(tab);
+                //    // dist version
+                //    // dist version
                 //    $scope.curtab = $scope.tabHash[tab.id];
                 //
                 //    if ($scope.curtab) {
@@ -821,9 +819,9 @@
                 //        document.getElementById($scope.curtab._id).scrollIntoView();
                 //    }
                 //    else {
-                //        $log.error("Error to trace Current Tab on startup [tabHash / curtab]");
-                //        $log.info($scope.tabHash);
-                //        $log.info($scope.curtab);
+                //        // dist version
+                //        // dist version
+                //        // dist version
                 //    }
                 //
                 //    if ($scope.$root.$$phase != '$apply' && $scope.$root.$$phase != '$digest') {
@@ -834,35 +832,35 @@
 
                 // 탭 활성화된 부분 캐치하는 부분
                 chrome.tabs.onActivated.addListener(function (activeInfo) {
-                    $log.debug("Fired the chrome.tabs.onActivated for tracing Current Tab [activeInfo]");
-                    $log.info(activeInfo);
+                    // dist version
+                    // dist version
                     chrome.tabs.get(activeInfo.tabId, function (tab) {
-                        $log.debug("request to the chrome.tabs.get for tracing Current Tab [tab]");
-                        $log.info(tab);
+                        // dist version
+                        // dist version
 
                         var target = findTab(tab.id);
 
                         if (target) {
                             if ($scope.curtab) {
-                                $log.debug("There is past curtab. Set the state to inactive.");
+                                // dist version
                                 $scope.curtab.active = false;
                             }
                             else {
-                                $log.warn("Past curtab is empty. [curtab]");
-                                $log.info($scope.curtab);
+                                // dist version
+                                // dist version
                             }
 
-                            $log.debug("Set the new curtab's state active and Change curtab [target]");
-                            $log.info(target);
+                            // dist version
+                            // dist version
                             target.node.active = true;
                             $scope.curtab = target.node;
                             document.getElementById($scope.curtab._id).scrollIntoView();
                         }
                         else {
-                            $log.error("Error to trace Current Tab [target]");
-                            $log.info(target);
+                            // dist version
+                            // dist version
 
-                            // console.log("onActivated is fired. but undefined target... tabId : " + tab.id);
+                            // // dist version
                         }
 
                         if ($scope.$root.$$phase != '$apply' && $scope.$root.$$phase != '$digest') {
@@ -874,11 +872,11 @@
 
                 // 탭 생성시 감지 부분
                 chrome.tabs.onCreated.addListener(function (newTab) {
-                    $log.debug("Fired the chrome.tabs.onCreated for tracing New Tab [newTab]");
-                    $log.info(newTab);
+                    // dist version
+                    // dist version
                     // 수동적으로 생성된 탭 생성 감지 부분
                     if (newTab.url == "chrome://newtab/") {
-                        $log.debug("It's chrome://newtab/");
+                        // dist version
                         var newNode = {
                             _id: addCount(),
                             parent: getCount(),
@@ -903,7 +901,7 @@
                     // [경우의 수]
                     // 탭 복제,
                     else if (newTab.openerTabId) {
-                        $log.debug("It's new children in onCreated");
+                        // dist version
                         var parentOfNewNode = findTab(newTab.openerTabId);
 
                         var newNode = {
@@ -924,7 +922,7 @@
                         pushToTree(newNode);
                     }
                     else {
-                        $log.debug("It's new tab from list!");
+                        // dist version
 
                         var newNode = {
                             _id: addCount(),
@@ -952,18 +950,18 @@
 
                 // 탭 변화 감지부
                 chrome.tabs.onUpdated.addListener(function (tabId, changes, tab) {
-                    $log.debug("Fired the chrome.tabs.onUpdated for detecting changing tab [tabId, changes, tab]");
-                    $log.info(tabId);
-                    $log.info(changes);
-                    $log.info(tab);
+                    // dist version
+                    // dist version
+                    // dist version
+                    // dist version
 
                     // 수동 새 탭의 경우
                     var value = $scope.newTabHash[tabId];
                     if (value) {
-                        $log.debug("It's Manual New Tab. [value]");
-                        $log.info(value);
+                        // dist version
+                        // dist version
                         if (changes.status == "loading") {
-                            $log.debug("And it's loading tab...");
+                            // dist version
                             if (tab.title != tab.url || tab.title != '')
                                 value.title = tab.title;
                             value.state = changes.status;
@@ -972,7 +970,7 @@
                         }
                         // 완료 부
                         else if (changes.status == "complete") {
-                            $log.debug("And it's complete!");
+                            // dist version
                             if (tab.title != tab.url || tab.title != '')
                                 value.title = tab.title;
                             value.state = changes.status;
@@ -992,10 +990,10 @@
 
                     value = $scope.newTabOpenerHash[tabId];
                     if (value) {
-                        $log.debug("It's new tab of TABOPENER from another tab in update");
-                        $log.info(value);
+                        // dist version
+                        // dist version
                         //if (changes.status == "loading") {
-                        $log.debug("And it's "+changes.status+" tab... set title, url, favicon, state");
+                        // dist version
                         if (tab.title != tab.url || tab.title != '')
                             value.title = tab.title;
                         value.url = tab.url;
@@ -1007,10 +1005,10 @@
 
                     value = $scope.tabChildHash[tabId];
                     if (value) {
-                        $log.debug("It's new tab of TABCHILD from another tab in update");
-                        $log.info(value);
+                        // dist version
+                        // dist version
                         //if (changes.status == "loading") {
-                        $log.debug("And it's "+changes.status+" tab... set title, url, favicon, state");
+                        // dist version
                         if (tab.title != tab.url || tab.title != '')
                             value.title = tab.title;
                         value.url = tab.url;
@@ -1023,10 +1021,10 @@
                     // 리스트에서 히스토리를 누른 경우
                     value = $scope.newTabListHash[tabId];
                     if (value) {
-                        $log.debug("It's new tab from list in update!");
-                        $log.info(value);
+                        // dist version
+                        // dist version
                         //if (changes.status == "loading") {
-                            $log.debug("And it's loading tab... set title, url, favicon, state");
+                            // dist version
                             if (tab.title != tab.url || tab.title != '')
                                 value.title = tab.title;
                             value.url = tab.url;
@@ -1037,10 +1035,10 @@
 
                     value = $scope.tabHash[tabId];
                     if (value) {
-                        $log.debug("It's any Tab in tabHash. [value]");
-                        $log.info(value);
+                        // dist version
+                        // dist version
                         if (changes.status == "loading") {
-                            $log.debug("And it's loading tab...");
+                            // dist version
                             if (tab.title != tab.url || tab.title != '') {
                                 value.oldtitle = value.title;
                                 value.title = tab.title;
@@ -1051,7 +1049,7 @@
                         }
                         // 어떤 탭이든 완료 경우
                         if (changes.status == "complete") {
-                            $log.debug("And it's complete!");
+                            // dist version
                             if (tab.title != tab.url || tab.title != '')
                                 value.title = tab.title;
                             value.url = tab.url;
@@ -1067,11 +1065,11 @@
 
                     value = $scope.directHash[tabId];
                     if (value) {
-                        $log.debug("It's direct Tab. [value]");
-                        $log.info(value);
+                        // dist version
+                        // dist version
                         // 직접 접근한 경우 완료
                         if (changes.status == "complete") {
-                            $log.debug("And it's complete!");
+                            // dist version
                             if (tab.title != tab.url || tab.title != '')
                                 value.title = tab.title;
                             value.url = tab.url;
@@ -1095,18 +1093,18 @@
 
 
                 chrome.tabs.onReplaced.addListener(function (addedTabId, removedTabId) {
-                    $log.debug("Fired the chrome.tabs.onReplaced for detecting replaced tab [addedTabId, removedTabId]");
-                    $log.info(addedTabId);
-                    $log.info(removedTabId);
+                    // dist version
+                    // dist version
+                    // dist version
 
                     // 수동 새 탭 경우 Replaced부
                     var value = $scope.newTabHash[removedTabId];
                     if (value) {
-                        $log.debug("It's Replaced New Tab. [value]");
-                        $log.info(value);
+                        // dist version
+                        // dist version
                         var callback = function (tab) {
-                            $log.debug("It's Replaced New Tab of CALLBACK. [tab]");
-                            $log.info(tab);
+                            // dist version
+                            // dist version
                             var value = $scope.newTabHash[removedTabId];
                             //var value = $scope.newTabHash[removedTabId];
                             //
@@ -1150,19 +1148,19 @@
                     // 대체되는 탭이 존재한다면 (by instant page)
                     value = $scope.tabHash[removedTabId];
                     if (value) {
-                        $log.debug("It's Replaced by instant page not new Tab. [value]");
-                        $log.info(value);
+                        // dist version
+                        // dist version
                         var callback = function (tab) {
-                            $log.debug("It's Replaced by instant page of CALLBACK not new Tab. [tab]");
-                            $log.info(tab);
+                            // dist version
+                            // dist version
 
                             var value = $scope.tabHash[removedTabId];
 
-                            $log.info(value);
+                            // dist version
 
                             var replaceNode = $scope.replaceTabHash[tab.id];
 
-                            $log.info(replaceNode);
+                            // dist version
 
                             if (tab.title != tab.url || tab.title != '')
                                 replaceNode.title = tab.title;
@@ -1204,15 +1202,15 @@
 
                 // 링크로 파생된 탭 시작 부
                 chrome.webNavigation.onCreatedNavigationTarget.addListener(function (details) {
-                    $log.debug("Fired the chrome.webNavigation.onCreatedNavigationTarget for detecting link tab [details]");
-                    $log.info(details);
+                    // dist version
+                    // dist version
                     var value = $scope.tabHash[details.sourceTabId];
                     //if (value) {
-                    //    $log.debug("It's clearly linked tab. [value]");
-                    //    $log.info(value);
+                    //    // dist version
+                    //    // dist version
                     //    var callback = function (tab) {
-                    //        $log.debug("It's clearly linked tab of CALLBACK. [tab]");
-                    //        $log.info(tab);
+                    //        // dist version
+                    //        // dist version
                     //
                     //        //var newNode = {
                     //        //    _id: addCount(),
@@ -1250,7 +1248,7 @@
                     // Tab Opener로 생긴 애면
                     value = $scope.newTabOpenerHash[details.tabId];
                     if (value) {
-                        $log.debug("It's new node from another node... probably child tab.");
+                        // dist version
 
                         // 해쉬 재조정
                         $scope.tabChildHash[value.tabId] = value;
@@ -1261,32 +1259,32 @@
 
                 // 탭 변화 감지부
                 chrome.webNavigation.onCommitted.addListener(function (details) {
-                    $log.debug("Fired the chrome.webNavigation.onCommitted for detecting changing tab [details]");
-                    $log.info(details);
+                    // dist version
+                    // dist version
                     var value = $scope.tabHash[details.tabId];
-                    $log.info(value);
+                    // dist version
                     if (!value) {
                         value = $scope.tabChildHash[details.tabId];
-                        $log.info(value);
+                        // dist version
                     }
                     if (value) {
                         // 파생 판정
                         if (details.transitionType == "link") {
-                            $log.debug("It's linked tab. [value]");
-                            $log.info(value);
+                            // dist version
+                            // dist version
 
                             var callback = function (tab) {
                                 var node = findTab(tab.id);
                                 var value = node.node;
-                                $log.debug("It's linked tab of CALLBACK. [tab]");
-                                $log.info(tab);
-                                $log.info(value);
-                                $log.info(details.transitionQualifiers);
-                                $log.info(searchStringInArray("client_redirect", details.transitionQualifiers));
+                                // dist version
+                                // dist version
+                                // dist version
+                                // dist version
+                                // dist version
                                 // onCreatedNavigationTarget으로 생성된 자식 탭 로딩 부
                                 if (value.state == "start") {
-                                    $log.debug("It's clearly linked tab's START in CALLBACK. [value]");
-                                    $log.info(value);
+                                    // dist version
+                                    // dist version
                                     if (tab.title != tab.url || tab.title != '')
                                         value.title = tab.title;
                                     value.url = tab.url;
@@ -1296,8 +1294,8 @@
                                 // 제자리 depth
                                 else if(!details.url.match('http://section.blog.naver.com/main/DirectoryPostList.nhn')
                                     && searchStringInArray("client_redirect", details.transitionQualifiers)) {
-                                    $log.debug("It's autoself refresh linked tab in CALLBACK. [value]");
-                                    $log.info(value);
+                                    // dist version
+                                    // dist version
                                     if (tab.title != tab.url || tab.title != '')
                                         value.title = tab.title;
                                     value.url = tab.url;
@@ -1305,8 +1303,8 @@
                                     value.state = "complete"; // state가 loading이여도 후에 complete가 안일어나므로...
                                 }
                                 else if (node.hash == 'refreshBlogHash') {
-                                    $log.debug("It's specific blog redirect of Committed in CALLBACK......");
-                                    $log.info(value);
+                                    // dist version
+                                    // dist version
                                     if (tab.title != tab.url || tab.title != '')
                                         value.title = tab.title;
                                     value.url = tab.url;
@@ -1317,8 +1315,8 @@
                                 }
                                 else if (node.hash != 'tabChildHash' && node.node.url != "chrome://newtab/") { // 이렇게 되면 자신의 파생된 탭을 기억하는 값이라서 구분이 안된다.
                                     // server_redirect 를 고려해야할듯
-                                    $log.debug("It's self linked tab's OLD&NEW in CALLBACK. [value]");
-                                    $log.info(value);
+                                    // dist version
+                                    // dist version
 
                                     var newNode = {
                                         _id: addCount(),
@@ -1353,14 +1351,14 @@
                                     $scope.tabHash[newNode.tabId] = newNode;
                                 }
                                 else if (node.hash == 'tabChildHash') {// server_redirect 를 고려해야할듯
-                                    $log.debug("It's tabChild in CALLBACK. so i change to tabHash [value]");
-                                    $log.info(value);
+                                    // dist version
+                                    // dist version
 
                                     $scope.tabHash[node.node.tabId] = node.node;
                                     $scope[node.hash][node.node.tabId] = undefined;
                                 }
 
-                                $log.debug("it's end???");
+                                // dist version
 
                                 if ($scope.$root.$$phase != '$apply' && $scope.$root.$$phase != '$digest') {
                                     $scope.$apply();
@@ -1369,15 +1367,15 @@
                             chrome.tabs.get(details.tabId, callback);
                         }
                         else if (details.transitionType == "auto_subframe") {
-                            $log.debug("auto_subframe...");
+                            // dist version
                             // 아이콘이 히스토리로 남는다. 따로 빼서 관리해야할듯.
                             if (details.url.match("http://blog.naver.com/PostView.nhn")) {
-                                $log.debug("refresh!!...");
+                                // dist version
                                 $scope.refreshBlogHash[value.tabId] = value;
                                 chrome.tabs.update(details.tabId, {'url': details.url});
                             }
                             //else if (details.url.match("http://blog.daum.net/_blog/BlogTypeView.do")) {
-                            //    $log.debug("refresh!!...");
+                            //    // dist version
                             //    $scope.refreshBlogHash[value.tabId] = value;
                             //    chrome.tabs.update(details.tabId, {'url': details.url});
                             //}
@@ -1393,8 +1391,8 @@
                         }
                         else if (details.transitionType == "start_page") {
                             if (searchStringInArray("forward_back", details.transitionQualifiers)) {
-                                $log.debug("It's forawrd_back tab. [value]");
-                                $log.info(value);
+                                // dist version
+                                // dist version
 
                                 var newNode = {
                                     _id: addCount(),
@@ -1430,14 +1428,14 @@
                             }
                         }
                         else if (details.transitionType == "form_submit") {
-                            $log.info("form submit linked");
+                            // dist version
                             var callback = function (tab) {
-                                $log.info("form submit linked CALLBACK");
-                                $log.info(tab);
+                                // dist version
+                                // dist version
                                 var value = $scope.tabHash[details.tabId];
                                 var url = tab.url;
                                 var result = parseURL(url);
-                                $log.info(result);
+                                // dist version
                                 if (result.hostname.match('search.naver.com')) {
                                     var query = result.searchObject.query;
                                     var queryWord = decodeURIComponent(query).replace(/\+/g, ' ');
@@ -1481,10 +1479,10 @@
 
                     value = $scope.newTabOpenerHash[details.tabId];
                     if (value) {
-                        $log.debug("It's new tab from another tab how?");
+                        // dist version
 
                         if (details.transitionType == "reload") {
-                            $log.debug("It's reloading... probably copy tab.");
+                            // dist version
 
                             var parentValue = pickNodeAsEle(value.parent);
 
@@ -1509,7 +1507,7 @@
 
                     value = $scope.newTabListHash[details.tabId];
                     if (value) {
-                        $log.debug("It's new tab from list in Committed!");
+                        // dist version
 
                     }
 
@@ -1522,14 +1520,14 @@
                                 $scope.tabHash[value.node.tabId] = value.node;
                             }
                             else if (value.hash != "newTabListHash") {
-                                $log.debug("It's direct bookmark tab of OLD&NEW in CALLBACK. [value]");
-                                $log.info(value);
+                                // dist version
+                                // dist version
                                 var callback = function (tab) {
                                     var node = findTab(tab.id);
                                     var value = node.node;
 
-                                    $log.debug("It's direct bookmark tab of OLD&NEW of CALLBACK in CALLBACK. [tab]");
-                                    $log.info(tab);
+                                    // dist version
+                                    // dist version
                                     var newNode = {
                                         _id: addCount(),
                                         parent: getCount(),
@@ -1580,14 +1578,14 @@
 
                         value = $scope.tabHash[details.tabId];
                         if (value) {
-                            $log.debug("It's direct tab of OLD&NEW in CALLBACK. [value]");
-                            $log.info(value);
+                            // dist version
+                            // dist version
                             var callback = function (tab) {
                                 var node = findTab(tab.id);
                                 var value = node.node;
 
-                                $log.debug("It's direct tab of OLD&NEW of CALLBACK in CALLBACK. [tab]");
-                                $log.info(tab);
+                                // dist version
+                                // dist version
                                 var newNode = {
                                     _id: addCount(),
                                     parent: getCount(),
@@ -1624,10 +1622,10 @@
                             chrome.tabs.get(details.tabId, callback);
                         }
                         else {
-                            $log.debug("It's direct tab of OLD&NEW by instant page in CALLBACK. [value]");
-                            $log.info(value);
+                            // dist version
+                            // dist version
                             var callback = function (tab) {
-                                $log.debug("It's direct tab of OLD&NEW of CALLBACK by instant page in CALLBACK. [newNode]");
+                                // dist version
 
                                 // Instant로 인해 prerendering이 된다면 탭을 가져올 수 없다. 나중에 Replace에서 처리해야함
                                 var newNode = {
@@ -1638,7 +1636,7 @@
 
                                 Com.getNodeId(newNode);
 
-                                $log.info(newNode);
+                                // dist version
 
                                 $scope.replaceTabHash[newNode.tabId] = newNode;
                                 //$scope.directHash[newNode.tabId] = newNode;
@@ -1656,29 +1654,29 @@
 
                 // 탭 닫힘 구현
                 chrome.tabs.onRemoved.addListener(function (tabId) {
-                    $log.debug("Fired the chrome.tabs.onRemoved for making history or deleting new tab [tabId / target]");
-                    $log.info(tabId);
+                    // dist version
+                    // dist version
                     var target = findTab(tabId);
-                    $log.info(target);
+                    // dist version
 
                     if (target) {
                         if (target.hash == "newTabHash") {
-                            $log.debug("It's new Tab. So I deleted this tab... [target]");
-                            $log.info(target);
+                            // dist version
+                            // dist version
                             $scope.newTabHash[tabId] = undefined;
                             popFromTree(target.node);
                             target.node = undefined;
                         }
                         else if (target.node.state == "start") {
-                            $log.debug("It's start tab. So I deleted this tab... [target]");
-                            $log.info(target);
+                            // dist version
+                            // dist version
                             $scope[target.hash][tabId] = undefined;
                             popFromTree(target.node);
                             target.node = undefined;
                         }
                         else {
-                            $log.debug("It's old Tab. So I made this tab hitorized... [target]");
-                            $log.info(target);
+                            // dist version
+                            // dist version
                             target.node.state = "history";
                             target.node.active = false;
                             target.node.tabId = 0;
@@ -1686,8 +1684,8 @@
                         }
                     }
                     else {
-                        $log.error("Missing removed tab. Why can't detecting this?");
-                        $log.info(tabId);
+                        // dist version
+                        // dist version
                     }
 
                     if ($scope.$root.$$phase != '$apply' && $scope.$root.$$phase != '$digest') {
@@ -1699,30 +1697,30 @@
                 // 페이지 소스 받는 부분
                 chrome.runtime.onMessage.addListener(
                     function(request, sender, sendResponse) {
-                        $log.debug("Fired the chrome.runtime.onMessage for scraping [request / sender]");
-                        $log.info(request);
-                        $log.info(sender);
+                        // dist version
+                        // dist version
+                        // dist version
 
                         var checkBlacklist = function (url) {
                             var blacklist = Blacklist.getBlacklist();
 
-                            console.log(blacklist);
+                            // dist version
 
                             for (var i = 0; i < blacklist.length; i++) {
                                 var words = blacklist[i].split('*');
-                                console.log(words);
+                                // dist version
                                 var j = 0;
 
                                 for (var j = 0; j < words.length; j++) {
-                                    console.log(words[j]);
+                                    // dist version
                                     if (!url.match(words[j])) {
-                                        console.log("break occured");
+                                        // dist version
                                         break;
                                     }
                                 }
 
                                 if (j == words.length) {
-                                    console.log("blacklist filter occured");
+                                    // dist version
                                     break;
                                 }
                             }
@@ -1737,20 +1735,20 @@
                         };
 
                         var saveBodyToNode = function (block) {
-                            $log.debug("It's scrapped data from list. [request.data / sender.tab]");
-                            //$log.info(request.data);
-                            $log.info(sender.tab);
+                            // dist version
+                            //// dist version
+                            // dist version
 
                             $scope.$apply(function () {
                                 var target = findTab(sender.tab.id);
 
                                 if (target) {
-                                    $log.debug("Success saved body in node [target]");
-                                    $log.info(target);
+                                    // dist version
+                                    // dist version
 
                                     var url = target.node.url;
                                     var result = parseURL(url);
-                                    $log.info(result);
+                                    // dist version
                                     if (result.hostname.match('search.naver.com')) {
                                         var query = result.searchObject.query;
                                         var queryWord = decodeURIComponent(query).replace(/\+/g, ' ');
@@ -1765,13 +1763,13 @@
                                         target.node.body = undefined;
                                     }
 
-                                    console.log(target.node);
+                                    // dist version
                                     if (!target.node.keyword) {
-                                        console.log("attached body");
+                                        // dist version
                                         target.node.body = request.data;
                                     }
                                     else
-                                        console.log(target.node.keyword);
+                                        // dist version
 
                                     var value = target.node;
                                     var tab = sender.tab;
@@ -1787,8 +1785,8 @@
                                     Com.saveNode(target.node);
                                 }
                                 else {
-                                    $log.error("Error saved body in node [sender]");
-                                    $log.info(sender);
+                                    // dist version
+                                    // dist version
                                 }
                             });
 
@@ -1821,7 +1819,7 @@
             blacklist = defaultBlacklist.slice(0);
             if (items.blacklist) {
                 blacklist = items.blacklist;
-                console.log(items.blacklist);
+                // dist version
             }
             else {
                 // default blackslist
@@ -1851,7 +1849,7 @@
             setBlacklist: function (str) {
                 blacklist = arrayfy(str);
                 chrome.storage.local.set({'blacklist': blacklist});
-                console.log(blacklist);
+                // dist version
             },
 
             getBlacklistByString: function () {
@@ -1872,7 +1870,7 @@
 
         $scope.showSignForm = function () {
             $scope.message = "Show Form Button Clicked";
-            console.log($scope.message);
+            // dist version
 
             var modalInstance = $modal.open({
                 templateUrl: '../sign-form.html',
@@ -1888,14 +1886,14 @@
             modalInstance.result.then(function (selectedItem) {
                 $scope.selected = selectedItem;
             }, function () {
-                $log.info('Modal dismissed at: ' + new Date());
+                // dist version
             });
         };
 
 
         $scope.showLoginForm = function () {
             $scope.message = "Show Form Button Clicked";
-            console.log($scope.message);
+            // dist version
 
             var modalInstance = $modal.open({
                 templateUrl: '../login-form.html',
@@ -1912,14 +1910,14 @@
             modalInstance.result.then(function (selectedItem) {
                 $scope.selected = selectedItem;
             }, function () {
-                $log.info('Modal dismissed at: ' + new Date());
+                // dist version
             });
         }
 
 
         $scope.showOptionForm = function () {
             $scope.message = "Show Form Button Clicked";
-            console.log($scope.message);
+            // dist version
 
             var modalInstance = $modal.open({
                 templateUrl: '../option-form.html',
@@ -1935,7 +1933,7 @@
             modalInstance.result.then(function (selectedItem) {
                 $scope.selected = selectedItem;
             }, function () {
-                $log.info('Modal dismissed at: ' + new Date());
+                // dist version
             });
         };
 
@@ -1944,12 +1942,12 @@
             // [Breadcrumb]
             //return;
             if(items.token) {
-                console.log("You have a token");
-                console.log(items.token);
+                // dist version
+                // dist version
                 Com.setToken(items.token);
             }
             else {
-                console.log("You don't have a token");
+                // dist version
                 $scope.showLoginForm();
             }
         };
@@ -1961,7 +1959,7 @@
         $scope.btnLabel = "OK";
         $scope.form = {};
         $scope.signSubmitForm = function () {
-            console.log($scope.account);
+            // dist version
 
             if ($scope.form.signForm.$valid) {
                 $scope.btnLabel = "Process...";
@@ -1977,12 +1975,12 @@
                 reqPromise.success(function (data, status, headers, config) {
                     if (status == 201) {
                         var token = data.data.token;
-                        console.log("Sign up is finished.");
-                        console.log(token);
+                        // dist version
+                        // dist version
                     }
                     else {
-                        alert('to sign up account to server success but unknown behavior.');
-                        console.log(JSON.stringify(data));
+                        // dist version
+                        // dist version
                     }
 
                     $scope.btnLabel = "OK";
@@ -1993,7 +1991,7 @@
 
 
                 reqPromise.error(function (data, status, headers, config) {
-                    alert('to sign up account to server error :' + status);
+                    // dist version
 
                     if (status == 404) {
                         // TODO: Error 404 Implement
@@ -2005,12 +2003,12 @@
                         alert('to sign up account to server unknown error : ' + status);
                     }
 
-                    console.log(JSON.stringify(data));
+                    // dist version
 
                     $scope.btnLabel = "OK";
                 });
             } else {
-                console.log('signForm is not in scope');
+                // dist version
             }
         };
 
@@ -2039,15 +2037,15 @@
                         $modalInstance.close('closed');
                     }
                     else {
-                        alert('to login account to server success but unknown behavior.');
-                        console.log(JSON.stringify(data));
+                        // dist version
+                        // dist version
                     }
                 });
 
 
                 reqPromise.error(function (data, status, headers, config) {
-                    alert('to login account to server error :' + status);
-                    console.log($scope.account);
+                    // dist version
+                    // dist version
                     if (status == 401 || status == 403) {
                         alert(data.message);
                     }
@@ -2055,10 +2053,10 @@
                         alert('to login account to server unknown error : ' + status);
                     }
 
-                    console.log(JSON.stringify(data));
+                    // dist version
                 });
             } else {
-                console.log('loginForm is not in scope');
+                // dist version
             }
         };
 
