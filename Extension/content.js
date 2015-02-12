@@ -19,8 +19,9 @@ console.log(start_anchors + " vs " + end_anchors);
     TODO: 현재 outerText로 텍스트만 가져올 때 전부 다 제대로 못가져오는 현상이 있다.
  */
 function getHTML(){
-    return document.documentElement.getElementsByTagName('body')[0].innerHTML;
-    // return document.documentElement.outerText;
+
+    //return document.documentElement.getElementsByTagName('body')[0].innerHTML;
+    return document.documentElement.outerText;
 }
 
 $( document ).ready(function() {

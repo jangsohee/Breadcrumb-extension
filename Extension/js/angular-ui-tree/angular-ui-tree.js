@@ -467,10 +467,14 @@
         $scope.expandOnHover = (angular.isUndefined($scope.expandOnHover)) ? 500 : $scope.expandOnHover;
 
         $scope.$watch('callbacks', function(newOptions) {
+            //console.log("callbacks Watch start");
           angular.forEach(newOptions, function(value, key) {
             if ($scope.$callbacks[key]) {
               if (angular.isFunction(value)) {
                 $scope.$callbacks[key] = value;
+                  //console.log("---------------------");
+                  //console.log(key);
+                  //console.log(value);
               }
             }
           });
@@ -666,10 +670,21 @@
         $scope.removeNode = function(node) {
           var deferred = $q.defer();
 
+            // remove action occured
           var index = $scope.$modelValue.indexOf(node.$modelValue);
           if (index > -1) {
             $scope.safeApply(function() {
               $scope.$modelValue.splice(index, 1)[0];
+
+
+                // 진짜 노드가 사라질때 일어나는 곳이다.
+                // 예를들어 이동으로 인한 변경도 occur됨.
+                //console.log($scope);
+                //console.log($scope.remove);
+                //console.log($scope.$treeScope);
+                //console.log($scope.$treeScope.$callbacks);
+                //console.log($scope.$treeScope.$callbacks.remove);
+
 
               deferred.resolve(node);
             });
@@ -842,10 +857,8 @@
         $scope.removeNode = function() {
           if ($scope.$treeScope.$callbacks.remove(node)) {
             var node = $scope.remove();
-
             return node;
           }
-
           return undefined;
         };
 
@@ -909,6 +922,11 @@
     .controller('TreeHandleController', ['$scope', '$element', '$attrs', 'treeConfig',
       function ($scope, $element, $attrs, treeConfig) {
         this.scope = $scope;
+
+          //$scope.remove = function (scope) {
+          //    console.log("Test");
+          //    scope.remove()
+          //};
 
         $scope.$element = $element;
         $scope.$handleElement = $element;
@@ -999,6 +1017,9 @@
             return true;
           };
 
+            callbacks.removeNode = function(node) {
+                return true;
+            };
           callbacks.dropped = function(event) {
           };
 

@@ -14,3 +14,74 @@
 .font-size {
     font-size: 6px;
 }
+
+.textoverflow {
+    width: 70%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow:ellipsis;
+    display: inline-block;
+}
+
+.item {
+    display: inline;
+}
+
+.btn-collapse {
+    padding: 1px 2px;
+    font-size: 3px;
+}
+
+.btn-del {
+    padding: 1px 4px;
+    font-size: 3px;
+}
+
+.delBtnBox {
+    display: inline;
+
+}
+
+.item-height {
+    height: 21px;
+}
+
+body {
+    background-image: url("../img/bg.png");
+    #background: rgba(0,0,0, 0.75);
+}
+
+.main-set {
+    margin-top: 60px;
+    color: greenyellow;
+    #color: #EEEEEE;
+}
+
+.icon {
+    background-color: snow;
+    height: 16px;
+    line-height: 15px;
+    margin: auto;
+    padding: 0px 0px 0px 0px;
+    display: inline-block;
+}
+
+.navbar-custom {
+    border-bottom: solid;
+    border-color: white;
+    border-bottom-width: 1px;
+}
+
+.img-custom {
+    margin: 6px;
+    margin-left: 20px;
+}
+
+.form-custom {
+    background-color: black;
+    color: white;
+}
+
+.form-group-custom {
+    margin-bottom: 2px;
+}

@@ -4,7 +4,7 @@ function makeUIPopup() {
         type: "popup",
         left: 1,
         top: 1,
-        width: 400,
+        width: 500,
         height: window.screen.availHeight - 1 - 1,
         focused: true
     };
@@ -35,3 +35,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
+chrome.browserAction.onClicked.addListener(function (tab) {
+    alert("Test");
+    chrome.windows.getAll({'populate': true}, function (windows) {
+        var i, j;
+        for (i = 0; i < windows.length; i++) {
+            if (windows[i]) {
+                for (j = 0; j < windows[i].tabs.length; j++){
+                    if (windows[i].tabs[j].title == "Breadcrumb") {
+                        chrome.windows.update(windows[i].id, {'focused': true});
+                        break;
+                    }
+                }
+
+                if(j != windows[i].tabs.length)
+                    break;
+            }
+        }
+
+        if (i == windows.length && j == windows[i-1].tabs.length)
+            makeUIPopup();
+    });
+});

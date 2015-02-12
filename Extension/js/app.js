@@ -5,6 +5,38 @@
 (function() {
     var app = angular.module('histree', ['ui.tree', 'ui.bootstrap']);
 
+    //app.config(["$provide",function($provide) {
+    //    $provide.decorator("$log", function ($delegate, shadowLogger) {
+    //        return shadowLogger($delegate);
+    //    });
+    //}]);
+    //
+    //app.factory("shadowLogger", function(){
+    //
+    //    return function($delegate){
+    //
+    //        return  {
+    //
+    //            log: function() {
+    //                console.log("SHADOW: ",arguments);
+    //            },
+    //
+    //            info: function(){},
+    //
+    //            error: function() {
+    //                console.log("SHADOW: ",arguments);
+    //            },
+    //
+    //            warn:function(){
+    //                console.log("SHADOW: ",arguments);
+    //            }
+    //
+    //        };
+    //
+    //    };
+    //
+    //});
+
     app.value('baseUrl', 'http://210.118.74.170:9000/');
     //app.value('baseUrl', 'http://121.135.191.219:9000/')
     app.value('projectName', 'Breadcrumb');
@@ -51,6 +83,8 @@
 
             node.title = sNode.title;
             node.url = sNode.url;
+            if (!node.keyword)
+                node.keyword = sNode.keyword ? sNode.keyword : ":block";
 
             return node;
         };
@@ -79,7 +113,7 @@
                     if (node._id == node.parent)
                         node.parent = data.data._id;
                     node._id = data.data._id;
-                    sendNode(node);
+                    //sendNode(node);
                 }
                 else {
                     alert('to get node Id from server success but unknown behavior.');
@@ -89,7 +123,7 @@
 
 
             reqPromise.error(function (data, status, headers, config) {
-                alert('to get node Id from server error :' + status);
+                console.log('to get node Id from server error :' + status);
 
                 if (status == 404) {
                     // TODO: Error 404 Implement
@@ -98,7 +132,7 @@
                     // TODO: Error 422 Implement and Check code
                 }
                 else {
-                    alert('to get node Id from server unknown error : ' + status);
+                    console.log('to get node Id from server unknown error : ' + status);
                 }
 
                 console.log(JSON.stringify(data));
@@ -134,6 +168,8 @@
                     var sNodeData = data.data;
                     if(!convertToClient(sNodeData, node))
                         alert("to convert to client node error.");
+
+
 
                     //console.log("success to save into server");
                     //console.log(data);
@@ -171,14 +207,14 @@
             }
 
             var dataSet = {
-                parent: pnodeId ? pnodeId : undefined,
-                index: index ? index : undefined
+                parent: pnodeId ? pnodeId : null,
+                index: index ? index : null
             };
 
 
             var reqConfig = {
                 method: 'PUT',
-                url: baseUrl + 'api/histories/' + nodeId._id + '/shift',
+                url: baseUrl + 'api/histories/' + nodeId + '/shift',
                 headers: {
                     'Authorization': 'Bearer ' + token
                 },
@@ -281,20 +317,55 @@
                 if (status == 200) {
                     var nodes = data.data.rootHistories;
 
-                    function recursiveInput(Nodes) {
+                    function parseURL(url) {
+                        var parser = document.createElement('a'),
+                            searchObject = {},
+                            queries, split, i;
+                        // Let the browser do the work
+                        parser.href = url;
+                        // Convert query string to object
+                        queries = parser.search.replace(/^\?/, '').split('&');
+                        for( i = 0; i < queries.length; i++ ) {
+                            split = queries[i].split('=');
+                            searchObject[split[0]] = split[1];
+                        }
+                        return {
+                            protocol: parser.protocol,
+                            host: parser.host,
+                            hostname: parser.hostname,
+                            port: parser.port,
+                            pathname: parser.pathname,
+                            search: parser.search,
+                            searchObject: searchObject,
+                            hash: parser.hash
+                        };
+                    }
+
+                    function recursiveMark(Nodes) {
                         var i;
                         for (i = 0; i < Nodes.length; i++) {
                             Nodes[i].state = "history";
                             Nodes[i].favicon = "history.png";
 
-                            if(Nodes[i].children && Nodes[i].children.length > 0)
-                                recursiveInput(Nodes[i].children);
+                            var url = Nodes[i].url;
+                            var result = parseURL(url);
+                            if (result.hostname.match('search.naver.com')) {
+                                var query = result.searchObject.query;
+                                var queryWord = decodeURIComponent(query).replace(/\+/g, ' ');
+                                Nodes[i].keyword = queryWord;
+                            }
 
-                            treeData.push(Nodes[i]);
+                            if(Nodes[i].children && Nodes[i].children.length > 0)
+                                recursiveMark(Nodes[i].children);
                         }
                     }
 
-                    recursiveInput(nodes);
+                    recursiveMark(nodes);
+
+                    var i;
+                    for (i = 0; i < nodes.length; i++) {
+                        treeData.push(nodes[i]);
+                    }
 
                     alert("Success connect to server!");
 
@@ -351,7 +422,9 @@
 
             init: requestTree,
 
-            saveNode: requestNodeId,
+            getNodeId: requestNodeId,
+
+            saveNode: sendNode,
 
             shiftNode: shiftNode,
 
@@ -376,15 +449,13 @@
                 emptyPlaceholderEnabled: false,
                 maxDepth: 10,
                 dragDelay: 0,
-                dragDistance: 0,
+                dragDistance: 5,
                 lockX: false,
                 lockY: false,
                 boundTo: '',
                 spacing: 20,
                 coverage: 50,
                 cancelKey: 'esc',
-                //copyKey: 'shift',
-                //selectKey: 'ctrl',
                 enableExpandOnHover: true,
                 expandOnHover: 500
             };
@@ -404,81 +475,155 @@
             //};
 
 
+            //$scope.test = {
+            //    remove: function () {
+            //        console.log("test");
+            //        return true;
+            //    }
+            //}
 
-            // Local Init
-            // $scope.mainCallback();
 
-            $scope.test = {
-                remove: function () {
-                    console.log("test");
-                    return true;
-                }
-            }
+
+
 
             $scope.mainCallback = function () {
+                // 현재 탭을 생성하는 쿼리를 날리면 onCreated에서 자식으로 판정한다. (자식일 경우랑 구분이 불가능........)
+                // 근데 좀 이상하긴 한데 아무튼 이상하다.
+                // 일단 우선적인 문제는 새 탭 생성이 되어도 자식이 되버리는 멍청한 상황이 된다는 것이다.
+                // 따라서 이를 해결하려면 먼저 create가 콜백이 더 빠른지를 측정해봐야할거 같다.
+                // 그지같다.
+                $scope.surf = function (scope) {
+                    var target = scope.$nodeScope.$modelValue;
+
+                    if (target.tabId && target.tabId != 0) {
+                        chrome.tabs.update(target.tabId, {'active':true});
+                    }
+                    else {
+                        chrome.tabs.create({'url': target.url, 'active': true});
+                    }
+                };
 
                 $scope.list = Com.treeData;
 
                 $scope.keys = keys;
 
-                $scope.callbacks = {
-                    remove: function (node) {
-                        function recursiveDelete(Nodes) {
-                            var i;
-                            for (i = 0; i < Nodes.length; i++) {
-                                console.log("in delete routine");
-                                if(Nodes[i].children && Nodes[i].children.length > 0)
-                                    recursiveDelete(Nodes[i].children);
-
-                                var target = findTab(Nodes[i].tabId);
-
-                                $scope[target.hash][target.node.tabId] = undefined;
-                            }
-                        }
-
-                        recursiveDelete(node);
-                        console.log("in delete routine");
-                        Com.deleteNode(node._id);
-
+                $scope.$callbacks = {
+                    accept: function (test) {
                         return true;
+                    },
+                    dropped: function (event) {
+                        console.log(event);
+                        var srcNode = event.source.nodeScope.$modelValue;
+                        var srcIndex = event.source.index;
+                        var destNode = event.dest.nodesScope.$parent.$modelValue;
+                        var destNodeId = destNode ? destNode._id : null;
+                        var destIndex = event.dest.index;
+
+
+                        if (srcIndex == destIndex && event.dest.nodesScope == event.source.nodesScope) {
+                            //console.log("it's self direction");
+                        }
+                        else {
+                            if (event.dest.nodesScope.$nodeScope) {
+                                srcNode.parent = destNode._id;
+                                console.log("it's moved in another node");
+                            }
+                            // go to root
+                            else {
+                                srcNode.parent = srcNode._id;
+                                console.log("it's moved in root node");
+                            }
+
+                            //console.log(srcNode._id);
+                            //console.log(destNodeId);
+                            //console.log(destIndex);
+
+                            // [Breadcrumb]
+                            console.log("calling shiftNode");
+                            Com.shiftNode(srcNode._id, destNodeId, destIndex);
+                        }
                     }
                 };
 
-                //$scope.remove = function (scope) {
-                //
-                //    scope.remove();
-                //};
+
+                $scope.removeNod = function (removeFunc, scope) {
+                    console.log(removeFunc);
+                    console.log(scope);
+
+                    var targetScope = scope.$nodeScope;
+                    var targetNode = targetScope.$modelValue;
+                    var targetChildren = targetScope.$childNodesScope.$modelValue;
+
+                    console.log(targetNode);
+                    console.log(targetChildren);
+
+                    // [Braedcrumb]
+                    Com.deleteNode(targetNode._id);
+
+                    function recursiveDelete(Nodes) {
+                        var i;
+                        for (i = 0; i < Nodes.length; i++) {
+                            if(Nodes[i].children && Nodes[i].children.length > 0)
+                                recursiveDelete(Nodes[i].children);
+
+                            var target = findTab(Nodes[i].tabId);
+                            if (target) {
+                                $scope[target.hash][target.node.tabId] = undefined;
+                                chrome.tabs.remove(Nodes[i].tabId);
+                            }
+                        }
+                    }
+
+                    recursiveDelete([targetNode]);
+
+                    removeFunc();
+                };
+
 
                 $scope.toggle = function (scope) {
                     scope.toggle();
                 };
 
-                $scope.newSubItem = function (scope) {
-                    var nodeData = scope.$modelValue;
-                    nodeData.children.push({
-                        _id: nodeData._id * 10 + nodeData.children.length,
-                        title: nodeData.title + '.' + (nodeData.children.length + 1),
-                        children: []
-                    });
-                };
 
                 // [서비스로 분리 부분]
                 function findTab(tabId) {
-                    var newTab = $scope.newTabHash[tabId];
-                    var tab = $scope.tabHash[tabId];
+                    var refreshBlog = $scope.refreshBlogHash[tabId];
+                    var newTab = $scope.newTabHash[tabId]; // by onCreated manually new tab
+                    var newTabOpener = $scope.newTabOpenerHash[tabId]; // by onCreated TabopnerId
+                    var tabChild = $scope.tabChildHash[tabId]; // by CreatedNavigation
+                    var newTabList = $scope.newTabListHash[tabId]; // by onCreated on clicking list
+                    var tab = $scope.tabHash[tabId]; // total
                     var directTab = $scope.directHash[tabId];
                     var replaceTab = $scope.replaceTabHash[tabId];
 
-                    if (newTab) {
+                    if (refreshBlog) {
+                        return {
+                            hash: 'refreshBlogHash',
+                            node: refreshBlog
+                        }
+                    }
+                    else if (newTab) {
                         return {
                             hash: 'newTabHash',
                             node: newTab
                         }
                     }
-                    else if (tab) {
+                    else if (newTabOpener) {
                         return {
-                            hash: 'tabHash',
-                            node: tab
+                            hash: 'newTabOpenerHash',
+                            node: newTabOpener
+                        }
+                    }
+                    else if (tabChild) {
+                        return {
+                            hash: 'tabChildHash',
+                            node: tabChild
+                        }
+                    }
+                    else if (newTabList) {
+                        return {
+                            hash: 'newTabListHash',
+                            node: newTabList
                         }
                     }
                     else if (directTab) {
@@ -491,6 +636,12 @@
                         return {
                             hash: 'replaceHash',
                             node: replaceTab
+                        }
+                    }
+                    else if (tab) {
+                        return {
+                            hash: 'tabHash',
+                            node: tab
                         }
                     }
                     else
@@ -533,16 +684,28 @@
                         else
                             alert("to push node into tree error");
                     }
+
+                    //if (newNode.active)
+                    //    document.getElementById(newNode._id).scrollIntoView();
                 }
 
 
                 function popFromTree(removedNode) {
+                    $log.debug("popFromTree occured");
                     var targetElement = document.getElementById(removedNode._id);
+                    $log.debug(targetElement);
                     if (targetElement) {
                         var targetScope = angular.element(targetElement).scope();
+                        $log.debug(targetScope);
                         var target = targetScope.$modelValue;
-                        var position = $.inArray(target, $scope.list);
-                        if (~position) $scope.list.splice(position, 1);
+                        $log.debug(target);
+
+                        var parentTarget = targetScope.$parentNodeScope.$modelValue;
+                        $log.debug(target);
+
+                        //부모의 리스트에 있는 걸 splice하면
+                        var position = $.inArray(target, parentTarget.children);
+                        if (~position) parentTarget.children.splice(position, 1);
                     }
                 }
 
@@ -560,6 +723,32 @@
                     return $scope.total.num;
                 }
 
+                function parseURL(url) {
+                    var parser = document.createElement('a'),
+                        searchObject = {},
+                        queries, split, i;
+                    // Let the browser do the work
+                    parser.href = url;
+                    // Convert query string to object
+                    queries = parser.search.replace(/^\?/, '').split('&');
+                    for( i = 0; i < queries.length; i++ ) {
+                        split = queries[i].split('=');
+                        searchObject[split[0]] = split[1];
+                    }
+                    return {
+                        protocol: parser.protocol,
+                        host: parser.host,
+                        hostname: parser.hostname,
+                        port: parser.port,
+                        pathname: parser.pathname,
+                        search: parser.search,
+                        searchObject: searchObject,
+                        hash: parser.hash
+                    };
+                }
+
+
+
 
                 // [초기화 부분]
                 // 탭 관리를 위한 Hash 선언
@@ -568,15 +757,19 @@
 
                 $scope.replaceTabHash = {};
                 $scope.newTabHash = {};
+                $scope.newTabOpenerHash = {};
+                $scope.tabChildHash = {};
+                $scope.refreshBlogHash = {};
+                $scope.newTabListHash ={};
                 $scope.tabHash = {};
                 $scope.directHash = {};
 
                 // 현재 탭 가져오기
                 chrome.tabs.query({}, function (tabArray) {
-                    $log.log("Enter the chrome.tabs.query for getting Current Tab [tabArray]");
+                    $log.debug("Enter the chrome.tabs.query for getting Current Tab [tabArray]");
                     $log.info(tabArray);
                     angular.forEach(tabArray, function (value, key) {
-                        if (value.title != projectName) {
+                        if (value.title != projectName && !value.url.match("chrome-devtools://")) {
                             var newNode = {
                                 _id: addCount(),
                                 parent: getCount(),
@@ -584,11 +777,12 @@
                                 title: value.title,
                                 url: value.url,
                                 favicon: value.favIconUrl ? value.favIconUrl : 'history.png',
-                                keyword: null,
+                                //keyword: ,
                                 state: 'complete',
                                 active: value.active,
                                 children: []
                             };
+
 
                             if (newNode.active)
                                 $scope.curtab = newNode;
@@ -598,9 +792,15 @@
                             else
                                 $scope.tabHash[newNode.tabId] = newNode;
 
+
+                            Com.getNodeId(newNode);
+
                             pushToTree(newNode);
 
+                            // [Breadcrumb]
                             chrome.tabs.reload(value.id);
+                            $log.debug("TEST QUERY");
+                            $log.debug(newNode.title);
                         }
                     });
 
@@ -612,7 +812,7 @@
 
                 // 시작시 현재 탭 추적
                 //chrome.tabs.getCurrent(function (tab) {
-                //    $log.log("Enter the chrome.tabs.getCurrent for tracing Current Tab on startup [tab]");
+                //    $log.debug("Enter the chrome.tabs.getCurrent for tracing Current Tab on startup [tab]");
                 //    $log.info(tab);
                 //    $scope.curtab = $scope.tabHash[tab.id];
                 //
@@ -634,17 +834,17 @@
 
                 // 탭 활성화된 부분 캐치하는 부분
                 chrome.tabs.onActivated.addListener(function (activeInfo) {
-                    $log.log("Fired the chrome.tabs.onActivated for tracing Current Tab [activeInfo]");
+                    $log.debug("Fired the chrome.tabs.onActivated for tracing Current Tab [activeInfo]");
                     $log.info(activeInfo);
                     chrome.tabs.get(activeInfo.tabId, function (tab) {
-                        $log.log("request to the chrome.tabs.get for tracing Current Tab [tab]");
+                        $log.debug("request to the chrome.tabs.get for tracing Current Tab [tab]");
                         $log.info(tab);
 
                         var target = findTab(tab.id);
 
                         if (target) {
                             if ($scope.curtab) {
-                                $log.log("There is past curtab. Set the state to inactive.");
+                                $log.debug("There is past curtab. Set the state to inactive.");
                                 $scope.curtab.active = false;
                             }
                             else {
@@ -652,7 +852,7 @@
                                 $log.info($scope.curtab);
                             }
 
-                            $log.log("Set the new curtab's state active and Change curtab [target]");
+                            $log.debug("Set the new curtab's state active and Change curtab [target]");
                             $log.info(target);
                             target.node.active = true;
                             $scope.curtab = target.node;
@@ -674,11 +874,11 @@
 
                 // 탭 생성시 감지 부분
                 chrome.tabs.onCreated.addListener(function (newTab) {
-                    $log.log("Fired the chrome.tabs.onCreated for tracing New Tab [newTab]");
+                    $log.debug("Fired the chrome.tabs.onCreated for tracing New Tab [newTab]");
                     $log.info(newTab);
                     // 수동적으로 생성된 탭 생성 감지 부분
                     if (newTab.url == "chrome://newtab/") {
-                        $log.log("It's chrome://newtab/");
+                        $log.debug("It's chrome://newtab/");
                         var newNode = {
                             _id: addCount(),
                             parent: getCount(),
@@ -686,38 +886,62 @@
                             title: newTab.title,
                             url: newTab.url,
                             favicon: newTab.favIconUrl ? newTab.favIconUrl : 'history.png',
-                            keyword: null,
+                            //keyword: null,
                             state: 'start',
                             active: true,
                             children: []
                         };
 
                         $scope.newTabHash[newNode.tabId] = newNode;
+                        Com.getNodeId(newNode);
                         pushToTree(newNode);
                     }
                     else if (newTab.url.indexOf('chrome-devtools') == 0) {
                         // No tracing
                     }
-                    // 다른 경우는 모두 자식으로
+                    // openerTabId가 있으면 자식으로
+                    // [경우의 수]
+                    // 탭 복제,
+                    else if (newTab.openerTabId) {
+                        $log.debug("It's new children in onCreated");
+                        var parentOfNewNode = findTab(newTab.openerTabId);
+
+                        var newNode = {
+                            _id: addCount(),
+                            parent: parentOfNewNode.node._id,
+                            tabId: newTab.id,
+                            title: "[Loading...]",
+                            url: newTab.url,
+                            favicon: newTab.favIconUrl ? newTab.favIconUrl : 'history.png',
+                            //keyword: null,
+                            state: 'start',
+                            active: false,
+                            children: []
+                        };
+
+                        $scope.newTabOpenerHash[newNode.tabId] = newNode;
+                        Com.getNodeId(newNode);
+                        pushToTree(newNode);
+                    }
                     else {
-                            $log.log("It's new children in onCreated");
-                            var parentOfNewNode = findTab(newTab.openerTabId);
+                        $log.debug("It's new tab from list!");
 
-                            var newNode = {
-                                _id: addCount(),
-                                parent: parentOfNewNode.node._id,
-                                tabId: newTab.id,
-                                title: "[Loading...]",
-                                url: newTab.url,
-                                favicon: newTab.favIconUrl ? newTab.favIconUrl : 'history.png',
-                                keyword: null,
-                                state: 'start',
-                                active: false,
-                                children: []
-                            };
+                        var newNode = {
+                            _id: addCount(),
+                            parent: getCount(),
+                            tabId: newTab.id,
+                            title: "[Loading...]",
+                            url: newTab.url,
+                            favicon: newTab.favIconUrl ? newTab.favIconUrl : 'history.png',
+                            //keyword: null,
+                            state: 'start',
+                            active: true,
+                            children: []
+                        };
 
-                            $scope.tabHash[newNode.tabId] = newNode;
-                            pushToTree(newNode);
+                        $scope.newTabListHash[newNode.tabId] = newNode;
+                        Com.getNodeId(newNode);
+                        pushToTree(newNode);
                     }
 
                     if ($scope.$root.$$phase != '$apply' && $scope.$root.$$phase != '$digest') {
@@ -728,7 +952,7 @@
 
                 // 탭 변화 감지부
                 chrome.tabs.onUpdated.addListener(function (tabId, changes, tab) {
-                    $log.log("Fired the chrome.tabs.onUpdated for detecting changing tab [tabId, changes, tab]");
+                    $log.debug("Fired the chrome.tabs.onUpdated for detecting changing tab [tabId, changes, tab]");
                     $log.info(tabId);
                     $log.info(changes);
                     $log.info(tab);
@@ -736,19 +960,21 @@
                     // 수동 새 탭의 경우
                     var value = $scope.newTabHash[tabId];
                     if (value) {
-                        $log.log("It's Manual New Tab. [value]");
+                        $log.debug("It's Manual New Tab. [value]");
                         $log.info(value);
                         if (changes.status == "loading") {
-                            $log.log("And it's loading tab...");
-                            value.title = tab.title;
+                            $log.debug("And it's loading tab...");
+                            if (tab.title != tab.url || tab.title != '')
+                                value.title = tab.title;
                             value.state = changes.status;
                             $scope.tabHash[tabId] = value;
                             $scope.newTabHash[tabId] = undefined; // debug
                         }
                         // 완료 부
                         else if (changes.status == "complete") {
-                            $log.log("And it's complete!");
-                            value.title = tab.title;
+                            $log.debug("And it's complete!");
+                            if (tab.title != tab.url || tab.title != '')
+                                value.title = tab.title;
                             value.state = changes.status;
 
                             if (value.url != tab.url) {
@@ -764,21 +990,70 @@
                         }
                     }
 
+                    value = $scope.newTabOpenerHash[tabId];
+                    if (value) {
+                        $log.debug("It's new tab of TABOPENER from another tab in update");
+                        $log.info(value);
+                        //if (changes.status == "loading") {
+                        $log.debug("And it's "+changes.status+" tab... set title, url, favicon, state");
+                        if (tab.title != tab.url || tab.title != '')
+                            value.title = tab.title;
+                        value.url = tab.url;
+                        value.favicon = tab.favIconUrl ? tab.favIconUrl : value.favicon;
+                        value.state = changes.status ? changes.status : value.state; // state가 loading이여도 후에 complete가 안일어나므로...
+                        //}
+
+                    }
+
+                    value = $scope.tabChildHash[tabId];
+                    if (value) {
+                        $log.debug("It's new tab of TABCHILD from another tab in update");
+                        $log.info(value);
+                        //if (changes.status == "loading") {
+                        $log.debug("And it's "+changes.status+" tab... set title, url, favicon, state");
+                        if (tab.title != tab.url || tab.title != '')
+                            value.title = tab.title;
+                        value.url = tab.url;
+                        value.favicon = tab.favIconUrl ? tab.favIconUrl : value.favicon;
+                        value.state = changes.status ? changes.status : value.state; // state가 loading이여도 후에 complete가 안일어나므로...
+                        //}
+                    }
+
+                    // [방문기록]
+                    // 리스트에서 히스토리를 누른 경우
+                    value = $scope.newTabListHash[tabId];
+                    if (value) {
+                        $log.debug("It's new tab from list in update!");
+                        $log.info(value);
+                        //if (changes.status == "loading") {
+                            $log.debug("And it's loading tab... set title, url, favicon, state");
+                            if (tab.title != tab.url || tab.title != '')
+                                value.title = tab.title;
+                            value.url = tab.url;
+                            value.favicon = tab.favIconUrl ? tab.favIconUrl : value.favicon;
+                            value.state = changes.status ? changes.status : value.state; // state가 loading이여도 후에 complete가 안일어나므로...
+                        //}
+                    }
+
                     value = $scope.tabHash[tabId];
                     if (value) {
-                        $log.log("It's any Tab in tabHash. [value]");
+                        $log.debug("It's any Tab in tabHash. [value]");
                         $log.info(value);
                         if (changes.status == "loading") {
-                            $log.log("And it's loading tab...");
-                            value.oldtitle = value.title;
-                            value.title = tab.title;
+                            $log.debug("And it's loading tab...");
+                            if (tab.title != tab.url || tab.title != '') {
+                                value.oldtitle = value.title;
+                                value.title = tab.title;
+                            }
+                            value.oldurl = value.url;
                             value.url = tab.url;
                             value.state = changes.status;
                         }
                         // 어떤 탭이든 완료 경우
                         if (changes.status == "complete") {
-                            $log.log("And it's complete!");
-                            value.title = tab.title;
+                            $log.debug("And it's complete!");
+                            if (tab.title != tab.url || tab.title != '')
+                                value.title = tab.title;
                             value.url = tab.url;
                             value.state = changes.status;
                             if (tab.favIconUrl)
@@ -792,12 +1067,13 @@
 
                     value = $scope.directHash[tabId];
                     if (value) {
-                        $log.log("It's direct Tab. [value]");
+                        $log.debug("It's direct Tab. [value]");
                         $log.info(value);
                         // 직접 접근한 경우 완료
                         if (changes.status == "complete") {
-                            $log.log("And it's complete!");
-                            value.title = tab.title;
+                            $log.debug("And it's complete!");
+                            if (tab.title != tab.url || tab.title != '')
+                                value.title = tab.title;
                             value.url = tab.url;
                             value.state = changes.status;
                             if (tab.favIconUrl)
@@ -819,27 +1095,50 @@
 
 
                 chrome.tabs.onReplaced.addListener(function (addedTabId, removedTabId) {
-                    $log.log("Fired the chrome.tabs.onReplaced for detecting replaced tab [addedTabId, removedTabId]");
+                    $log.debug("Fired the chrome.tabs.onReplaced for detecting replaced tab [addedTabId, removedTabId]");
                     $log.info(addedTabId);
                     $log.info(removedTabId);
 
                     // 수동 새 탭 경우 Replaced부
                     var value = $scope.newTabHash[removedTabId];
                     if (value) {
-                        $log.log("It's Replaced New Tab. [value]");
+                        $log.debug("It's Replaced New Tab. [value]");
                         $log.info(value);
                         var callback = function (tab) {
-                            $log.log("It's Replaced New Tab of CALLBACK. [tab]");
+                            $log.debug("It's Replaced New Tab of CALLBACK. [tab]");
                             $log.info(tab);
                             var value = $scope.newTabHash[removedTabId];
+                            //var value = $scope.newTabHash[removedTabId];
+                            //
+                            //if (tab.title != tab.url || tab.title != '')
+                            //    value.title = tab.title;
+                            //value.url = tab.url;
+                            //value.favicon = tab.favIconUrl ? tab.favIconUrl : 'history.png';
+                            //value.tabId = tab.id;
+                            //value.state = "replaced";
+                            //$scope.tabHash[tab.id] = value;
+                            //$scope.newTabHash[removedTabId] = undefined;
 
-                            value.title = tab.title;
-                            value.url = tab.url;
-                            value.favicon = tab.favIconUrl ? tab.favIconUrl : 'history.png';
-                            value.tabId = tab.id;
-                            value.state = "replaced";
-                            $scope.tabHash[tab.id] = value;
-                            $scope.newTabHash[removedTabId] = undefined;
+
+                            var replaceNode = $scope.replaceTabHash[tab.id];
+
+                            if (tab.title != tab.url || tab.title != '')
+                                replaceNode.title = tab.title;
+                            replaceNode.url = tab.url;
+                            replaceNode.favicon = tab.favIconUrl ? tab.favIconUrl : 'history.png';
+                            //replaceNode.keyword = null;
+                            replaceNode.state = 'complete';
+                            replaceNode.active = true;
+                            replaceNode.children = [];
+                            $scope.newTabHash[value.tabId] = undefined;
+
+                            $scope.curtab = replaceNode;
+                            $scope.tabHash[replaceNode.tabId] = replaceNode;
+                            $scope.replaceTabHash[replaceNode.tabId] = undefined;
+                            //$scope.directHash[newNode.tabId] = newNode;
+                            popFromTree(value);
+                            value = undefined;
+                            pushToTree(replaceNode);
 
                             if ($scope.$root.$$phase != '$apply' && $scope.$root.$$phase != '$digest') {
                                 $scope.$apply();
@@ -851,18 +1150,25 @@
                     // 대체되는 탭이 존재한다면 (by instant page)
                     value = $scope.tabHash[removedTabId];
                     if (value) {
-                        $log.log("It's Replaced by instant page not new Tab. [value]");
+                        $log.debug("It's Replaced by instant page not new Tab. [value]");
                         $log.info(value);
                         var callback = function (tab) {
-                            $log.log("It's Replaced by instant page of CALLBACK not new Tab. [tab]");
+                            $log.debug("It's Replaced by instant page of CALLBACK not new Tab. [tab]");
                             $log.info(tab);
 
-                            var replaceNode = $scope.replaceTabHash[tab.tabId];
+                            var value = $scope.tabHash[removedTabId];
 
-                            replaceNode.title = tab.title;
+                            $log.info(value);
+
+                            var replaceNode = $scope.replaceTabHash[tab.id];
+
+                            $log.info(replaceNode);
+
+                            if (tab.title != tab.url || tab.title != '')
+                                replaceNode.title = tab.title;
                             replaceNode.url = tab.url;
                             replaceNode.favicon = tab.favIconUrl ? tab.favIconUrl : 'history.png';
-                            replaceNode.keyword = null;
+                            //replaceNode.keyword = null;
                             replaceNode.state = 'complete';
                             replaceNode.active = true;
                             replaceNode.children = [];
@@ -898,93 +1204,122 @@
 
                 // 링크로 파생된 탭 시작 부
                 chrome.webNavigation.onCreatedNavigationTarget.addListener(function (details) {
-                    $log.log("Fired the chrome.webNavigation.onCreatedNavigationTarget for detecting link tab [details]");
+                    $log.debug("Fired the chrome.webNavigation.onCreatedNavigationTarget for detecting link tab [details]");
                     $log.info(details);
                     var value = $scope.tabHash[details.sourceTabId];
+                    //if (value) {
+                    //    $log.debug("It's clearly linked tab. [value]");
+                    //    $log.info(value);
+                    //    var callback = function (tab) {
+                    //        $log.debug("It's clearly linked tab of CALLBACK. [tab]");
+                    //        $log.info(tab);
+                    //
+                    //        //var newNode = {
+                    //        //    _id: addCount(),
+                    //        //    parent: value._id,
+                    //        //    tabId: tab.id,
+                    //        //    title: "[Loading...]",
+                    //        //    url: tab.url,
+                    //        //    favicon: tab.favIconUrl ? tab.favIconUrl : 'history.png',
+                    //        //    keyword: null,
+                    //        //    state: 'start',
+                    //        //    active: false,
+                    //        //    children: []
+                    //        //};
+                    //
+                    //        //var target = findTab(tab.id);
+                    //        //
+                    //        //target.node.parent = value._id;
+                    //        //target.node.title = tab.title;
+                    //        //target.node.url = tab.url;
+                    //        //target.node.favicon = tab.favIconUrl ? tab.favIconUrl : 'history.png';
+                    //        //
+                    //        //popFromTree(target);
+                    //        //pushToTree(target);
+                    //
+                    //        //pushToTree(newNode);
+                    //        //$scope.tabHash[newNode.tabId] = newNode;
+                    //
+                    //        if ($scope.$root.$$phase != '$apply' && $scope.$root.$$phase != '$digest') {
+                    //            $scope.$apply();
+                    //        }
+                    //    };
+                    //    chrome.tabs.get(details.tabId, callback);
+                    //}
+
+                    // Tab Opener로 생긴 애면
+                    value = $scope.newTabOpenerHash[details.tabId];
                     if (value) {
-                        $log.log("It's clearly linked tab. [value]");
-                        $log.info(value);
-                        var callback = function (tab) {
-                            $log.log("It's clearly linked tab of CALLBACK. [tab]");
-                            $log.info(tab);
-                            //var newNode = {
-                            //    _id: addCount(),
-                            //    parent: value._id,
-                            //    tabId: tab.id,
-                            //    title: "[Loading...]",
-                            //    url: tab.url,
-                            //    favicon: tab.favIconUrl ? tab.favIconUrl : 'history.png',
-                            //    keyword: null,
-                            //    state: 'start',
-                            //    active: false,
-                            //    children: []
-                            //};
+                        $log.debug("It's new node from another node... probably child tab.");
 
-                            //var target = findTab(tab.id);
-                            //
-                            //target.node.parent = value._id;
-                            //target.node.title = tab.title;
-                            //target.node.url = tab.url;
-                            //target.node.favicon = tab.favIconUrl ? tab.favIconUrl : 'history.png';
-                            //
-                            //popFromTree(target);
-                            //pushToTree(target);
-
-                            //pushToTree(newNode);
-                            //$scope.tabHash[newNode.tabId] = newNode;
-
-                            if ($scope.$root.$$phase != '$apply' && $scope.$root.$$phase != '$digest') {
-                                $scope.$apply();
-                            }
-                        };
-                        chrome.tabs.get(details.tabId, callback);
+                        // 해쉬 재조정
+                        $scope.tabChildHash[value.tabId] = value;
+                        $scope.newTabOpenerHash[value.tabId] = undefined;
                     }
                 });
 
 
                 // 탭 변화 감지부
                 chrome.webNavigation.onCommitted.addListener(function (details) {
-                    $log.log("Fired the chrome.webNavigation.onCommitted for detecting changing tab [details]");
+                    $log.debug("Fired the chrome.webNavigation.onCommitted for detecting changing tab [details]");
                     $log.info(details);
                     var value = $scope.tabHash[details.tabId];
+                    $log.info(value);
+                    if (!value) {
+                        value = $scope.tabChildHash[details.tabId];
+                        $log.info(value);
+                    }
                     if (value) {
                         // 파생 판정
                         if (details.transitionType == "link") {
-                            $log.log("It's linked tab. [value]");
+                            $log.debug("It's linked tab. [value]");
                             $log.info(value);
 
-                            //if(!(value.state == "start"
-                            //    || searchStringInArray("client_redirect", details.transitionQualifiers))) {
-                            //    $log.debug("Delete the tab in tabHash. [details]");
-                            //    $log.info(details);
-                            //    $scope.tabHash[details.tabId] = undefined;
-                            //}
-
                             var callback = function (tab) {
-                                $log.log("It's linked tab of CALLBACK. [tab]");
+                                var node = findTab(tab.id);
+                                var value = node.node;
+                                $log.debug("It's linked tab of CALLBACK. [tab]");
                                 $log.info(tab);
+                                $log.info(value);
+                                $log.info(details.transitionQualifiers);
+                                $log.info(searchStringInArray("client_redirect", details.transitionQualifiers));
                                 // onCreatedNavigationTarget으로 생성된 자식 탭 로딩 부
                                 if (value.state == "start") {
-                                    $log.log("It's clearly linked tab's START in CALLBACK. [value]");
+                                    $log.debug("It's clearly linked tab's START in CALLBACK. [value]");
                                     $log.info(value);
-                                    value.title = tab.title;
+                                    if (tab.title != tab.url || tab.title != '')
+                                        value.title = tab.title;
                                     value.url = tab.url;
                                     value.favicon = tab.favIconUrl ? tab.favIconUrl : 'history.png';
                                     value.state = "loading";
                                 }
                                 // 제자리 depth
-                                else if(searchStringInArray("client_redirect", details.transitionQualifiers)) {
-                                    $log.log("It's autoself refresh linked tab in CALLBACK. [value]");
+                                else if(!details.url.match('http://section.blog.naver.com/main/DirectoryPostList.nhn')
+                                    && searchStringInArray("client_redirect", details.transitionQualifiers)) {
+                                    $log.debug("It's autoself refresh linked tab in CALLBACK. [value]");
                                     $log.info(value);
-                                    value.title = tab.title;
+                                    if (tab.title != tab.url || tab.title != '')
+                                        value.title = tab.title;
                                     value.url = tab.url;
                                     value.favicon = tab.favIconUrl ? tab.favIconUrl : 'history.png';
                                     value.state = "complete"; // state가 loading이여도 후에 complete가 안일어나므로...
                                 }
-                                else if (!tab.openerTabId) { // 이렇게 되면 자신의 파생된 탭을 기억하는 값이라서 구분이 안된다.
-                                    // server_redirect 를 고려해야할듯
-                                    $log.log("It's self linked tab's OLA&NEW in CALLBACK. [value]");
+                                else if (node.hash == 'refreshBlogHash') {
+                                    $log.debug("It's specific blog redirect of Committed in CALLBACK......");
                                     $log.info(value);
+                                    if (tab.title != tab.url || tab.title != '')
+                                        value.title = tab.title;
+                                    value.url = tab.url;
+                                    value.favicon = tab.favIconUrl ? tab.favIconUrl : 'history.png';
+                                    value.state = "loading";
+
+                                    $scope.refreshBlogHash[node.node.tabId] = undefined;
+                                }
+                                else if (node.hash != 'tabChildHash' && node.node.url != "chrome://newtab/") { // 이렇게 되면 자신의 파생된 탭을 기억하는 값이라서 구분이 안된다.
+                                    // server_redirect 를 고려해야할듯
+                                    $log.debug("It's self linked tab's OLD&NEW in CALLBACK. [value]");
+                                    $log.info(value);
+
                                     var newNode = {
                                         _id: addCount(),
                                         parent: value.parent,
@@ -992,13 +1327,14 @@
                                         title: tab.title,
                                         url: tab.url,
                                         favicon: tab.favIconUrl ? tab.favIconUrl : 'history.png',
-                                        keyword: null,
-                                        state: 'start',
+                                        //keyword: null,
+                                        state: 'loading',
                                         active: value.active,
                                         children: []
                                     };
 
                                     value.title = value.oldtitle;
+                                    value.url = value.oldurl;
                                     value.tabId = 0;
                                     value.state = 'history';
                                     value.active = false;
@@ -1012,9 +1348,19 @@
                                     }
 
                                     $scope.curtab = newNode;
+                                    Com.getNodeId(newNode);
                                     pushToTree(newNode);
                                     $scope.tabHash[newNode.tabId] = newNode;
                                 }
+                                else if (node.hash == 'tabChildHash') {// server_redirect 를 고려해야할듯
+                                    $log.debug("It's tabChild in CALLBACK. so i change to tabHash [value]");
+                                    $log.info(value);
+
+                                    $scope.tabHash[node.node.tabId] = node.node;
+                                    $scope[node.hash][node.node.tabId] = undefined;
+                                }
+
+                                $log.debug("it's end???");
 
                                 if ($scope.$root.$$phase != '$apply' && $scope.$root.$$phase != '$digest') {
                                     $scope.$apply();
@@ -1022,7 +1368,210 @@
                             };
                             chrome.tabs.get(details.tabId, callback);
                         }
+                        else if (details.transitionType == "auto_subframe") {
+                            $log.debug("auto_subframe...");
+                            // 아이콘이 히스토리로 남는다. 따로 빼서 관리해야할듯.
+                            if (details.url.match("http://blog.naver.com/PostView.nhn")) {
+                                $log.debug("refresh!!...");
+                                $scope.refreshBlogHash[value.tabId] = value;
+                                chrome.tabs.update(details.tabId, {'url': details.url});
+                            }
+                            //else if (details.url.match("http://blog.daum.net/_blog/BlogTypeView.do")) {
+                            //    $log.debug("refresh!!...");
+                            //    $scope.refreshBlogHash[value.tabId] = value;
+                            //    chrome.tabs.update(details.tabId, {'url': details.url});
+                            //}
+
+                            var tab = details;
+
+                            if (tab.url == tab.title) {
+                                value.title = tab.title;
+                                value.url = tab.url;
+                                value.favicon = tab.favIconUrl ? tab.favIconUrl : value.favicon;
+                            }
+
+                        }
+                        else if (details.transitionType == "start_page") {
+                            if (searchStringInArray("forward_back", details.transitionQualifiers)) {
+                                $log.debug("It's forawrd_back tab. [value]");
+                                $log.info(value);
+
+                                var newNode = {
+                                    _id: addCount(),
+                                    parent: value.parent,
+                                    tabId: tab.id,
+                                    title: tab.title,
+                                    url: tab.url,
+                                    favicon: tab.favIconUrl ? tab.favIconUrl : 'history.png',
+                                    //keyword: null,
+                                    state: 'loading',
+                                    active: value.active,
+                                    children: []
+                                };
+
+                                value.title = value.oldtitle;
+                                value.url = value.oldurl;
+                                value.tabId = 0;
+                                value.state = 'history';
+                                value.active = false;
+                                value.favicon = value.oldfavicon ? value.oldfavicon : value.favicon;
+
+                                value.oldtitle = undefined;
+                                value.oldfavicon = undefined;
+
+                                if (value._id == value.parent) {
+                                    newNode.parent = newNode._id;
+                                }
+
+                                $scope.curtab = newNode;
+                                Com.getNodeId(newNode);
+                                pushToTree(newNode);
+                                $scope.tabHash[newNode.tabId] = newNode;
+                            }
+                        }
+                        else if (details.transitionType == "form_submit") {
+                            $log.info("form submit linked");
+                            var callback = function (tab) {
+                                $log.info("form submit linked CALLBACK");
+                                $log.info(tab);
+                                var value = $scope.tabHash[details.tabId];
+                                var url = tab.url;
+                                var result = parseURL(url);
+                                $log.info(result);
+                                if (result.hostname.match('search.naver.com')) {
+                                    var query = result.searchObject.query;
+                                    var queryWord = decodeURIComponent(query).replace(/\+/g, ' ');
+                                }
+
+                                var newNode = {
+                                    _id: addCount(),
+                                    parent: value.parent,
+                                    tabId: tab.id,
+                                    title: tab.title,
+                                    url: tab.url,
+                                    favicon: tab.favIconUrl ? tab.favIconUrl : 'history.png',
+                                    keyword: queryWord ? queryWord : null,
+                                    state: 'loading',
+                                    active: value.active,
+                                    children: []
+                                };
+
+                                value.title = value.oldtitle;
+                                value.url = value.oldurl;
+                                value.tabId = 0;
+                                value.state = 'history';
+                                value.active = false;
+                                value.favicon = value.oldfavicon ? value.oldfavicon : value.favicon;
+
+                                value.oldtitle = undefined;
+                                value.oldfavicon = undefined;
+
+                                if (value._id == value.parent) {
+                                    newNode.parent = newNode._id;
+                                }
+
+                                $scope.curtab = newNode;
+                                Com.getNodeId(newNode);
+                                pushToTree(newNode);
+                                $scope.tabHash[newNode.tabId] = newNode;
+                            }
+                            chrome.tabs.get(details.tabId, callback);
+                        }
                     }
+
+                    value = $scope.newTabOpenerHash[details.tabId];
+                    if (value) {
+                        $log.debug("It's new tab from another tab how?");
+
+                        if (details.transitionType == "reload") {
+                            $log.debug("It's reloading... probably copy tab.");
+
+                            var parentValue = pickNodeAsEle(value.parent);
+
+                            // parent가 루트 노드이면
+                            if (parentValue._id == parentValue.parent) {
+                                value.parent = value._id;
+                            }
+                            // parent가 루트가 아니면
+                            else {
+                                value.parent = parentValue.parent;
+                            }
+
+                            // 위치 재조정
+                            popFromTree(value);
+                            pushToTree(value);
+
+                            // 해쉬 재조정
+                            $scope.newTabOpenerHash[value.tabId] = undefined;
+                            $scope.tabHash[value.tabId] = value;
+                        }
+                    }
+
+                    value = $scope.newTabListHash[details.tabId];
+                    if (value) {
+                        $log.debug("It's new tab from list in Committed!");
+
+                    }
+
+                    if (details.transitionType == "auto_bookmark") {
+                        var value = findTab(details.tabId);
+
+                        if(value) {
+                            if (value.hash == "newTabHash") {
+                                $scope[value.hash][value.node.tabId] = undefined;
+                                $scope.tabHash[value.node.tabId] = value.node;
+                            }
+                            else if (value.hash != "newTabListHash") {
+                                $log.debug("It's direct bookmark tab of OLD&NEW in CALLBACK. [value]");
+                                $log.info(value);
+                                var callback = function (tab) {
+                                    var node = findTab(tab.id);
+                                    var value = node.node;
+
+                                    $log.debug("It's direct bookmark tab of OLD&NEW of CALLBACK in CALLBACK. [tab]");
+                                    $log.info(tab);
+                                    var newNode = {
+                                        _id: addCount(),
+                                        parent: getCount(),
+                                        tabId: value.tabId,
+                                        title: tab.title,
+                                        url: tab.url,
+                                        favicon: tab.favIconUrl ? tab.favIconUrl : 'history.png',
+                                        //keyword: null,
+                                        state: 'loading',
+                                        active: true,
+                                        children: []
+                                    };
+
+                                    value.state = "history";
+                                    value.tabId = 0; // 이전 탭 Id를 날린다.
+                                    value.title = value.oldtitle;
+                                    value.url = value.oldurl;
+                                    value.favicon = value.oldfavicon;
+                                    value.active = false;
+
+                                    value.oldtitle = undefined;
+                                    value.oldfavicon = undefined;
+
+                                    $scope.curtab = newNode;
+                                    $scope.tabHash[newNode.tabId] = newNode;
+                                    Com.getNodeId(newNode);
+                                    pushToTree(newNode);
+
+                                    if ($scope.$root.$$phase != '$apply' && $scope.$root.$$phase != '$digest') {
+                                        $scope.$apply();
+                                    }
+                                };
+                                chrome.tabs.get(details.tabId, callback);
+                            }
+                            else {
+                                value.node.active = false;
+                                $scope[value.hash][value.node.tabId] = undefined;
+                                $scope.tabHash[value.node.tabId] = value.node;
+                            }
+                        }
+                    }
+
                     // 주소창으로 직접 접근하는 경우
                     if ((details.transitionType == "typed"
                         && searchStringInArray("from_address_bar", details.transitionQualifiers))
@@ -1031,10 +1580,13 @@
 
                         value = $scope.tabHash[details.tabId];
                         if (value) {
-                            $log.log("It's direct tab of OLD&NEW in CALLBACK. [value]");
+                            $log.debug("It's direct tab of OLD&NEW in CALLBACK. [value]");
                             $log.info(value);
                             var callback = function (tab) {
-                                $log.log("It's direct tab of OLD&NEW of CALLBACK in CALLBACK. [tab]");
+                                var node = findTab(tab.id);
+                                var value = node.node;
+
+                                $log.debug("It's direct tab of OLD&NEW of CALLBACK in CALLBACK. [tab]");
                                 $log.info(tab);
                                 var newNode = {
                                     _id: addCount(),
@@ -1043,7 +1595,7 @@
                                     title: tab.title,
                                     url: tab.url,
                                     favicon: tab.favIconUrl ? tab.favIconUrl : 'history.png',
-                                    keyword: null,
+                                    //keyword: null,
                                     state: 'loading',
                                     active: true,
                                     children: []
@@ -1052,6 +1604,7 @@
                                 value.state = "history";
                                 value.tabId = 0; // 이전 탭 Id를 날린다.
                                 value.title = value.oldtitle;
+                                value.url = value.oldurl;
                                 value.favicon = value.oldfavicon;
                                 value.active = false;
 
@@ -1061,6 +1614,7 @@
                                 $scope.curtab = newNode;
                                 $scope.tabHash[newNode.tabId] = newNode;
                                 $scope.directHash[newNode.tabId] = newNode;
+                                Com.getNodeId(newNode);
                                 pushToTree(newNode);
 
                                 if ($scope.$root.$$phase != '$apply' && $scope.$root.$$phase != '$digest') {
@@ -1070,10 +1624,10 @@
                             chrome.tabs.get(details.tabId, callback);
                         }
                         else {
-                            $log.log("It's direct tab of OLD&NEW by instant page in CALLBACK. [value]");
+                            $log.debug("It's direct tab of OLD&NEW by instant page in CALLBACK. [value]");
                             $log.info(value);
                             var callback = function (tab) {
-                                $log.log("It's direct tab of OLD&NEW of CALLBACK by instant page in CALLBACK. [newNode]");
+                                $log.debug("It's direct tab of OLD&NEW of CALLBACK by instant page in CALLBACK. [newNode]");
 
                                 // Instant로 인해 prerendering이 된다면 탭을 가져올 수 없다. 나중에 Replace에서 처리해야함
                                 var newNode = {
@@ -1081,6 +1635,8 @@
                                     parent: getCount(),
                                     tabId: details.tabId
                                 };
+
+                                Com.getNodeId(newNode);
 
                                 $log.info(newNode);
 
@@ -1100,21 +1656,28 @@
 
                 // 탭 닫힘 구현
                 chrome.tabs.onRemoved.addListener(function (tabId) {
-                    $log.log("Fired the chrome.tabs.onRemoved for making history or deleting new tab [tabId / target]");
+                    $log.debug("Fired the chrome.tabs.onRemoved for making history or deleting new tab [tabId / target]");
                     $log.info(tabId);
                     var target = findTab(tabId);
                     $log.info(target);
 
                     if (target) {
                         if (target.hash == "newTabHash") {
-                            $log.log("It's new Tab. So I deleted this tab... [target]");
+                            $log.debug("It's new Tab. So I deleted this tab... [target]");
                             $log.info(target);
                             $scope.newTabHash[tabId] = undefined;
                             popFromTree(target.node);
                             target.node = undefined;
                         }
+                        else if (target.node.state == "start") {
+                            $log.debug("It's start tab. So I deleted this tab... [target]");
+                            $log.info(target);
+                            $scope[target.hash][tabId] = undefined;
+                            popFromTree(target.node);
+                            target.node = undefined;
+                        }
                         else {
-                            $log.log("It's old Tab. So I made this tab hitorized... [target]");
+                            $log.debug("It's old Tab. So I made this tab hitorized... [target]");
                             $log.info(target);
                             target.node.state = "history";
                             target.node.active = false;
@@ -1136,7 +1699,7 @@
                 // 페이지 소스 받는 부분
                 chrome.runtime.onMessage.addListener(
                     function(request, sender, sendResponse) {
-                        $log.log("Fired the chrome.runtime.onMessage for scraping [request / sender]");
+                        $log.debug("Fired the chrome.runtime.onMessage for scraping [request / sender]");
                         $log.info(request);
                         $log.info(sender);
 
@@ -1152,7 +1715,7 @@
 
                                 for (var j = 0; j < words.length; j++) {
                                     console.log(words[j]);
-                                    if (!searchStringInArray(words[j], url)) {
+                                    if (!url.match(words[j])) {
                                         console.log("break occured");
                                         break;
                                     }
@@ -1165,12 +1728,16 @@
                             }
 
                             if (i == blacklist.length) {
-                                saveBodyToNode();
+                                // [Breadcrumb]
+                                saveBodyToNode(false);
+                            }
+                            else {
+                                saveBodyToNode(true);
                             }
                         };
 
-                        var saveBodyToNode = function () {
-                            $log.log("It's scrapped data from list. [request.data / sender.tab]");
+                        var saveBodyToNode = function (block) {
+                            $log.debug("It's scrapped data from list. [request.data / sender.tab]");
                             //$log.info(request.data);
                             $log.info(sender.tab);
 
@@ -1178,13 +1745,46 @@
                                 var target = findTab(sender.tab.id);
 
                                 if (target) {
-                                    $log.log("Success saved body in node [target]");
+                                    $log.debug("Success saved body in node [target]");
                                     $log.info(target);
-                                    target.node.body = request.data;
+
+                                    var url = target.node.url;
+                                    var result = parseURL(url);
+                                    $log.info(result);
+                                    if (result.hostname.match('search.naver.com')) {
+                                        var query = result.searchObject.query;
+                                        var queryWord = decodeURIComponent(query).replace(/\+/g, ' ');
+                                        target.node.keyword = queryWord;
+                                    }
+                                    else if (target.node.url.match('https://www.google.co.kr/_/chrome/newtab')) {
+                                        target.node.keyword = ':block';
+                                    }
+
+                                    if (block) {
+                                        target.node.keyword = ":block";
+                                        target.node.body = undefined;
+                                    }
+
+                                    console.log(target.node);
+                                    if (!target.node.keyword) {
+                                        console.log("attached body");
+                                        target.node.body = request.data;
+                                    }
+                                    else
+                                        console.log(target.node.keyword);
+
+                                    var value = target.node;
+                                    var tab = sender.tab;
+
+                                    if (tab.title != tab.url || tab.title != '')
+                                        value.title = tab.title;
+                                    value.url = tab.url;
+                                    value.favicon = tab.favIconUrl ? tab.favIconUrl : 'history.png'
+                                    value.state = "complete"; // state가 loading이여도 후에 complete가 안일어나므로...
+
 
                                     // Server to save in
-                                    if (!Com.saveNode(target.node))
-                                        alert("pushToTree Error!!");
+                                    Com.saveNode(target.node);
                                 }
                                 else {
                                     $log.error("Error saved body in node [sender]");
@@ -1196,12 +1796,16 @@
                         }
 
                         if (request.data && sender.tab) {
+                            // [Breadcrumb]
                             checkBlacklist(sender.tab.url);
                         }
                     }
                 );
-            }
+            };
 
+            // Local Init
+            // [Breadcrumb]
+            //$scope.mainCallback();
             Com.setMainCallback($scope.mainCallback);
         }]);
 
@@ -1209,7 +1813,7 @@
 
     // Login modal
 
-    app.value('defaultBlacklist', ['http://*bank*']);
+    app.value('defaultBlacklist', ['http://*bank*, http://*privacy*, http://*account*, http://*my*page*']);
 
     app.factory('Blacklist', ['defaultBlacklist', function (defaultBlacklist) {
         var blacklist;
@@ -1337,6 +1941,8 @@
 
 
         var initService = function (items) {
+            // [Breadcrumb]
+            //return;
             if(items.token) {
                 console.log("You have a token");
                 console.log(items.token);
@@ -1380,6 +1986,8 @@
                     }
 
                     $scope.btnLabel = "OK";
+
+                    alert("Success to sign up! Please Login!")
                     $modalInstance.close('closed');
                 });
 
@@ -1425,7 +2033,7 @@
                 reqPromise.success(function (data, status, headers, config) {
                     if (status == 201) {
                         var token = data.data.token;
-                        chrome.storage.local.set({'token': token});
+                        chrome.storage.local.set({'token': token, 'user': data.data.user});
                         // Server Communication start --
                         Com.setToken(token);
                         $modalInstance.close('closed');
