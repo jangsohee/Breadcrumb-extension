@@ -67,6 +67,7 @@ body {
 }
 
 .navbar-custom {
+    background-image: url("../img/bg.png");
     border-bottom: solid;
     border-color: white;
     border-bottom-width: 1px;

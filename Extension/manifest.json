@@ -4,7 +4,7 @@
   "name": "Breadcrumb",
   "description": "Awesome",
   "version": "0.1",
-	
+  "icons": { "64": "./img/favicon.png"},
   "background": {
 	"scripts": ["background.js"]
   },

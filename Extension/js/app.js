@@ -78,8 +78,10 @@
                 child.parent = node._id;
             }
 
-            if (sNode.parent && node.parent != sNode.parent)
+            if (sNode.parent && node.parent != sNode.parent) {
                 alert("not match source and sNode!!");
+
+            }
 
             node.title = sNode.title;
             node.url = sNode.url;
@@ -166,8 +168,10 @@
             reqPromise.success(function (data, status, headers, config) {
                 if (status == 201) {
                     var sNodeData = data.data;
-                    if(!convertToClient(sNodeData, node))
+                    if(!convertToClient(sNodeData, node)) {
                         alert("to convert to client node error.");
+
+                    }
 
 
 
@@ -681,8 +685,10 @@
 
                         if (targetNode)
                             targetNode.children.push(newNode);
-                        else
+                        else {
                             alert("to push node into tree error");
+
+                        }
                     }
 
                     //if (newNode.active)
@@ -798,7 +804,8 @@
                             pushToTree(newNode);
 
                             // [Breadcrumb]
-                            chrome.tabs.reload(value.id);
+                            if (newNode.url != "chrome://extensions/")
+                                chrome.tabs.reload(value.id);
                             $log.debug("TEST QUERY");
                             $log.debug(newNode.title);
                         }
@@ -1770,8 +1777,10 @@
                                         console.log("attached body");
                                         target.node.body = request.data;
                                     }
-                                    else
+                                    else {
                                         console.log(target.node.keyword);
+
+                                    }
 
                                     var value = target.node;
                                     var tab = sender.tab;
