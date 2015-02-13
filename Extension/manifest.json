@@ -9,7 +9,7 @@
 	"scripts": ["background.js"]
   },
   "browser_action": {
-    "default_icon": ".img/favicon.png"
+    "default_icon": "./img/favicon.png"
   },
   "permissions": [
 	"tabs",
