@@ -14,8 +14,8 @@
 		<meta name="viewport" content="width=device-width; initial-scale=1.0">
 
 		<!-- Replace favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
-		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
-        <link rel="stylesheet" type="text/css" href="js/angular-ui-tree/angular-ui-tree.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/lib/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="js/lib/angular-ui-tree/angular-ui-tree.min.css" />
         <link rel="stylesheet" type="text/css" href="css/main_ui.css" />
 		<link rel="shortcut icon" href="img/favicon.png">
 		<link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -34,7 +34,7 @@
 		</ul> -->
 
     <nav class="navbar navbar-inverse navbar-fixed-top navbar-custom" role="navigation">
-        <div ng-controller="LoginController" class="container ng-scope">
+        <div ng-controller="UserController" class="container ng-scope">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#timeline-navbar-collapse">
                     <span class="sr-only">Toggle navigation</span>
@@ -137,12 +137,16 @@
             <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
         </div>
 
-		<script type="text/javascript" src="js/angular.js"></script>
-        <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
-		<script type="text/javascript" src="js/app.js"></script>
-		<script type="text/javascript" src="js/angular-ui-tree/angular-ui-tree.js"></script>
-        <script type="text/javascript" src="js/ui-bootstrap-tpls-0.12.0.min.js"></script>
-        <script type="text/javascript" src="js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="js/lib/angular.js"></script>
+        <script type="text/javascript" src="js/lib/jquery-1.11.2.min.js"></script>
+        <script type="text/javascript" src="js/app/app.js"></script>
+        <script type="text/javascript" src="js/app/services/CommunicationService.js"></script>
+        <script type="text/javascript" src="js/app/services/BlacklistService.js"></script>
+        <script type="text/javascript" src="js/app/controllers/UserController.js"></script>
+        <script type="text/javascript" src="js/app/controllers/HistreeController.js"></script>
+		<script type="text/javascript" src="js/lib/angular-ui-tree/angular-ui-tree.js"></script>
+        <script type="text/javascript" src="js/lib/ui-bootstrap-tpls-0.12.0.min.js"></script>
+        <script type="text/javascript" src="js/lib/bootstrap.min.js"></script>
 
 	</body>
 </html>
