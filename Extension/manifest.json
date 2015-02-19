@@ -4,12 +4,12 @@
   "name": "Breadcrumb",
   "description": "Awesome",
   "version": "0.1",
-  "icons": { "64": "./img/favicon.png"},
+  "icons": { "64": "img/favicon.png"},
   "background": {
-	"scripts": ["background.js"]
+	"scripts": ["js/extension/background.js"]
   },
   "browser_action": {
-    "default_icon": "./img/favicon.png"
+    "default_icon": "img/favicon.png"
   },
   "permissions": [
 	"tabs",
@@ -21,7 +21,7 @@
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],
-      "js": ["js/jquery-1.11.2.min.js", "content.js"]
+      "js": ["js/lib/jquery-1.11.2.min.js", "js/extension/content.js"]
     }
   ]
 }

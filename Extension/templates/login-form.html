@@ -1,19 +1,19 @@
 <div class="modal-header">
     <h3>Login please.</h3>
 </div>
-<form name="form.loginForm" ng-submit="submitForm()" novalidate>
+<form name="form.loginForm" ng-submit="loginModal.submitLoginForm()" novalidate>
     <div class="modal-body">
         <!-- EMAIL -->
         <div class="form-group">
             <label>Email</label>
-            <input type="email" name="email" class="form-control" ng-model="account.email" required>
+            <input type="email" name="email" class="form-control" ng-model="loginModal.account.email" required>
             <p ng-show="form.loginForm.email.$invalid && !form.loginForm.email.$pristine" class="help-block">Enter a valid email.</p>
         </div>
 
         <!-- PASSWORD -->
         <div class="form-group">
             <label>Password</label>
-            <input type="password" name="password" class="form-control" ng-model="account.password" ng-minlength="4" ng-maxlength="40" required>
+            <input type="password" name="password" class="form-control" ng-model="loginModal.account.password" ng-minlength="4" ng-maxlength="40" required>
             <p ng-show="form.loginForm.password.$error.minlength" class="help-block">Password is too short.</p>
             <p ng-show="form.loginForm.password.$error.maxlength" class="help-block">Password is too long.</p>
         </div>
@@ -21,8 +21,8 @@
 
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-primary" ng-click="showSignForm()">Sign up</button>
-        <button type="submit" class="btn btn-primary" ng-disabled="form.loginForm.$invalid">Login</button>
+        <button type="button" class="btn btn-primary" ng-click="loginModal.showSignForm()" ng-disabled="loginModal.submitLbl != 'Login'">Sign up</button>
+        <button type="submit" class="btn btn-primary" ng-disabled="form.loginForm.$invalid || loginModal.submitLbl != 'Login'">{{loginModal.submitLbl}}</button>
         <!--<button class="btn btn-warning" ng-click="cancel()">Cancel</button>-->
     </div>
 </form>

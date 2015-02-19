@@ -1,26 +1,26 @@
 <div class="modal-header">
     <h3>Create A New Account!</h3>
 </div>
-<form name="form.signForm" ng-submit="signSubmitForm()" novalidate>
+<form name="form.signForm" ng-submit="signModal.submitSignForm()" novalidate>
     <div class="modal-body">
         <!-- EMAIL -->
         <div class="form-group">
             <label>Email</label>
-            <input type="email" name="email" class="form-control" ng-model="account.email" required>
+            <input type="email" name="email" class="form-control" ng-model="signModal.account.email" required>
             <p ng-show="form.signForm.email.$invalid && !form.signForm.email.$pristine" class="help-block">Enter a valid email.</p>
         </div>
 
         <!-- NICKNAME -->
         <div class="form-group">
             <label>Nickname</label>
-            <input type="text" name="nickname" class="form-control" ng-model="account.nickname" required>
+            <input type="text" name="nickname" class="form-control" ng-model="signModal.account.nickname" required>
             <p ng-show="form.signForm.nickname.$invalid && !form.signForm.nickname.$pristine" class="help-block">Nickname is required.</p>
         </div>
 
         <!-- PASSWORD -->
         <div class="form-group">
             <label>Password</label>
-            <input type="password" name="password" class="form-control" ng-model="account.password" ng-minlength="4" ng-maxlength="40" required>
+            <input type="password" name="password" class="form-control" ng-model="signModal.account.password" ng-minlength="4" ng-maxlength="40" required>
             <p ng-show="form.signForm.password.$error.minlength" class="help-block">Password is too short.</p>
             <p ng-show="form.signForm.password.$error.maxlength" class="help-block">Password is too long.</p>
         </div>
@@ -28,7 +28,7 @@
 
     </div>
     <div class="modal-footer">
-        <button type="submit" class="btn btn-primary" ng-disabled="form.signForm.$invalid">{{btnLabel}}</button>
-        <button type="button" class="btn btn-warning" ng-click="cancel()">Cancel</button>
+        <button type="submit" class="btn btn-primary" ng-disabled="form.signForm.$invalid || signModal.submitLbl != 'OK'">{{signModal.submitLbl}}</button>
+        <button type="button" class="btn btn-warning" ng-click="signModal.cancel()" ng-disabled="signModal.submitLbl != 'OK'">Cancel</button>
     </div>
 </form>

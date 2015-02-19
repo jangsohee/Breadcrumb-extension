@@ -7,11 +7,11 @@
 
     angular
         .module('histree')
-        .controller('HistreeController', HistreeController);
+        .controller('HistreeCtrl', HistreeCtrl);
 
-    HistreeController.$inject = ['$scope', '$timeout', '$http', '$log', 'keys', 'Com', 'projectName', 'Blacklist'];
+    HistreeCtrl.$inject = ['$scope', '$timeout', '$http', '$log', 'keys', 'Com', 'projectName', 'Blacklist'];
 
-    function HistreeController($scope, $timeout, $http, $log, keys, Com, projectName, Blacklist) {
+    function HistreeCtrl($scope, $timeout, $http, $log, keys, Com, projectName, Blacklist) {
         $scope.parameters = {
             dragEnabled: true,
             emptyPlaceholderEnabled: false,
