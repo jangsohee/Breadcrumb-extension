@@ -30,7 +30,9 @@
                 templateUrl: '../templates/sign-form.html',
                 controller: 'SignModalInstanceCtrl',
                 controllerAs: 'signModal',
-                scope: $scope
+                scope: $scope,
+                backdrop: 'static',
+                keyboard: false
             });
 
             modalInstance.result.catch(function () {
@@ -44,9 +46,9 @@
                 vm.submitLbl = "Process...";
 
                 return login(vm.account)
-                    .then(function (loginInfo) {
+                    .then(function (userInfo) {
                         $modalInstance.close();
-                        return loginInfo;
+                        return userInfo;
                     })
                     .catch(function () {
                         console.log("submit is canceling.");
@@ -65,10 +67,10 @@
             var promise = accountService.login(account);
             console.log(promise);
             return promise
-                .then(function (loginInfo) {
+                .then(function (userInfo) {
                     // [BreadCrumb] Server Communication start --
-                    Com.setToken(loginInfo.token);
-                    return loginInfo;
+                    Com.requestTree(userInfo.token);
+                    return userInfo;
                 })
                 .catch(function () {
                     console.log("login failed");

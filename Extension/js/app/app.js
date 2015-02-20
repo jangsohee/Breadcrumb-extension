@@ -12,20 +12,28 @@
     app.value('defaultBlacklist', ['http://*bank*, http://*privacy*, http://*account*, http://*my*page*']);
     //app.value('baseUrl', 'http://121.135.191.219:9000/')
 
-    app.run(['$modal', '$log', 'Com', function ($modal, $log, Com) {
-        var initService = function (items) {
+    app.run(['$modal', '$log', 'accountService', 'Com', function ($modal, $log, accountService, Com) {
+        initService();
+
+        /////////////////////////////
+
+        function initService() {
             // [Breadcrumb]
             //return;
-            if (items.token) {
+
+            var userInfo = accountService.getUserInfo();
+
+            if (userInfo.token) {
                 console.log("You have a token");
-                console.log(items.token);
-                Com.setToken(items.token);
+                console.log(userInfo.token);
+                Com.requestTree(userInfo.token);
             }
             else {
                 console.log("You don't have a token");
                 showLoginForm();
             }
-        };
+        }
+
 
         function showLoginForm() {
             var modalInstance = $modal.open({
@@ -40,7 +48,5 @@
                 $log.info('Modal dismissed at: ' + new Date());
             });
         }
-
-        chrome.storage.local.get('token', initService);
     }]);
 })();

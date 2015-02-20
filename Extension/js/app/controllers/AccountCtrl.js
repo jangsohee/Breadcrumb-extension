@@ -7,11 +7,11 @@
 
     angular
         .module('histree')
-        .controller('UserCtrl', UserCtrl);
+        .controller('AccountCtrl', AccountCtrl);
 
-    UserCtrl.$inject = ['$modal', '$log', 'Com'];
+    AccountCtrl.$inject = ['$modal', '$log', 'accountService', 'Com'];
 
-    function UserCtrl($modal, $log, Com) {
+    function AccountCtrl($modal, $log, accountService, Com) {
         var vm = this;
 
         vm.logout = logout;
@@ -20,7 +20,8 @@
         ///////////////////////////
 
         function logout() {
-            Com.clearToken();
+            accountService.logout();
+            location.reload(true);
         }
 
 

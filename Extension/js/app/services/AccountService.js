@@ -9,17 +9,21 @@
         .module('histree')
         .factory('accountService', accountService);
 
-    accountService.$inject = ['$http', '$q', 'baseUrl', 'Com'];
+    accountService.$inject = ['$http', '$q', 'baseUrl'];
 
     function accountService($http, $q, baseUrl) {
         var userInfo = {
-            token: null,
-            user: null
+            token: null
+            //nickname: null
         };
 
         var service = {
             login: login,
-            signUp: signUp
+            logout: logout,
+            signUp: signUp,
+            setUserInfo: setUserInfo,
+            getUserInfo: getUserInfo,
+            clearUserInfo: clearUserInfo
         };
 
         return service;
@@ -42,22 +46,20 @@
 
             function loginComplete(response) {
                 var loginInfo = {
-                    'token': response.data.token,
-                    'user': response.data.user
+                    token: response.data.token
+                    //nickname: response.data.nickname
                 };
-
-                chrome.storage.local.set(loginInfo);
 
                 if (response.status == 201) {
                     console.log("Success to login server");
                 }
                 else {
                     console.log('to login account to server success but unknown behavior.');
-                    console.log(JSON.stringify(data));
+                    console.log(JSON.stringify(response.data));
                 }
 
 
-                return loginInfo;
+                return setUserInfo(loginInfo);
             }
 
 
@@ -68,6 +70,11 @@
 
                 return $q.reject();
             }
+        }
+
+
+        function logout() {
+            clearUserInfo();
         }
 
 
@@ -106,6 +113,50 @@
 
                 return $q.reject();
             }
+        }
+
+
+        function setUserInfo(inUserInfo) {
+            if (inUserInfo.token) {
+                userInfo.token = inUserInfo.token;
+                ///Please add check routine to if statement
+                //userInfo.nickname = inUserInfo.nickname;
+
+                chrome.storage.local.set(userInfo);
+
+
+                return userInfo;
+            }
+
+            return false;
+        }
+
+
+        function getUserInfo() {
+            if (!userInfo.token) {
+                chrome.storage.local.get(['token'], function (items) {
+                    if (items && items.token) {
+                        userInfo.token = items.token;
+                        //userInfo.nickname = items.nickname;
+                    }
+                    else {
+                        userInfo.token = null;
+                        //userInfo.nickname = null;
+                    }
+                });
+            }
+
+
+            return userInfo;
+        }
+
+
+        function clearUserInfo() {
+            userInfo.token = null;
+            //userInfo.nickname = null;
+
+            chrome.storage.local.remove('token');
+            //chrome.storage.local.remove('nickname');
         }
     }
 }) ();

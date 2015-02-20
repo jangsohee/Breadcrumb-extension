@@ -12,7 +12,6 @@
     Com.$inject = ['$http', 'baseUrl'];
 
     function Com($http, baseUrl) {
-        var token;
         var treeData = [];
         var mainCallback;
 
@@ -42,17 +41,6 @@
             shiftNode: shiftNode,
 
             deleteNode: deleteNode,
-
-            setToken: function (rtoken) {
-                token = rtoken;
-                requestTree();
-            },
-
-            clearToken: function () {
-                token = undefined;
-                chrome.storage.local.remove('token');
-                location.reload(true);
-            }
         };
 
         return service;
@@ -310,7 +298,7 @@
         }
 
 
-        function requestTree() {
+        function requestTree(token) {
             // Error process
             if (!token) {
                 alert("There is no token.");
