@@ -9,9 +9,9 @@
         .module('histree')
         .controller('AccountCtrl', AccountCtrl);
 
-    AccountCtrl.$inject = ['$modal', '$log', 'accountService', 'Com'];
+    AccountCtrl.$inject = ['$modal', '$log', 'account', 'Com'];
 
-    function AccountCtrl($modal, $log, accountService, Com) {
+    function AccountCtrl($modal, $log, account, Com) {
         var vm = this;
 
         vm.logout = logout;
@@ -20,7 +20,7 @@
         ///////////////////////////
 
         function logout() {
-            accountService.logout();
+            account.logout();
             location.reload(true);
         }
 

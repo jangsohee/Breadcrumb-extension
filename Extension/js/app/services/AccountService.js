@@ -7,11 +7,11 @@
 
     angular
         .module('histree')
-        .factory('accountService', accountService);
+        .factory('account', account);
 
-    accountService.$inject = ['$http', '$q', 'baseUrl'];
+    account.$inject = ['$http', '$q', 'baseUrl'];
 
-    function accountService($http, $q, baseUrl) {
+    function account($http, $q, baseUrl) {
         var userInfo = {
             token: null
             //nickname: null
@@ -30,11 +30,11 @@
 
         ///////////////////////
 
-        function login(account) {
+        function login(accountInfo) {
             var reqConfig = {
                 method: 'POST',
                 url: baseUrl + 'auth/local',
-                data: account
+                data: accountInfo
             };
 
 
@@ -65,7 +65,7 @@
 
             function loginFailed(error) {
                 console.log('to login account to server error');
-                console.log(account);
+                console.log(accountInfo);
                 console.log(JSON.stringify(error.data));
 
                 return $q.reject();
@@ -78,11 +78,11 @@
         }
 
 
-        function signUp(account) {
+        function signUp(accountInfo) {
             var reqConfig = {
                 method: 'POST',
                 url: baseUrl + 'api/users',
-                data: account
+                data: accountInfo
             };
 
 
@@ -108,7 +108,7 @@
             function signUpFailed(error) {
                 // TODO: Explain about incorrect values
                 console.log('to sign up account to server error');
-                console.log(account);
+                console.log(accountInfo);
                 console.log(JSON.stringify(error.data));
 
                 return $q.reject();

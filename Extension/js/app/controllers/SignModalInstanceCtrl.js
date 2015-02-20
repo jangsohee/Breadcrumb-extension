@@ -9,10 +9,16 @@
         .module('histree')
         .controller('SignModalInstanceCtrl', SignModalInstanceCtrl);
 
-    SignModalInstanceCtrl.$inject = ['$scope', '$modalInstance', '$http', '$q', 'accountService', 'Com', 'baseUrl'];
+    SignModalInstanceCtrl.$inject = ['$scope', '$modalInstance', '$http', '$q', 'account', 'Com', 'baseUrl'];
 
-    function SignModalInstanceCtrl($scope, $modalInstance, $http, $q, accountService, Com, baseUrl) {
+    function SignModalInstanceCtrl($scope, $modalInstance, $http, $q, account, Com, baseUrl) {
         var vm = this;
+
+        vm.accountInfo = {
+            email: '',
+            nickname: '',
+            password: ''
+        };
 
         vm.submitLbl = "OK";
         vm.cancel = cancel;
@@ -26,12 +32,12 @@
 
 
         function submitSignForm() {
-            console.log(vm.account);
+            console.log(vm.accountInfo);
 
             if ($scope.form.signForm.$valid) {
                 vm.submitLbl = "Process...";
 
-                return signUp(vm.account)
+                return signUp(vm.accountInfo)
                     .then(function (token) {
                         $modalInstance.close();
                         return token;
@@ -49,8 +55,8 @@
         }
 
 
-        function signUp(account) {
-            return accountService.signUp(account)
+        function signUp(accountInfo) {
+            return account.signUp(accountInfo)
                 .then(function(token) {
                     alert("Success to sign up! Please Login!");
                     return token;

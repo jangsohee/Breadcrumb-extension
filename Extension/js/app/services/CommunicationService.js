@@ -32,7 +32,7 @@
                 }, treeData);
             },
 
-            init: requestTree,
+            initTreeService: requestTree,
 
             getNodeId: requestNodeId,
 
@@ -43,7 +43,9 @@
             deleteNode: deleteNode,
         };
 
+
         return service;
+
         ///////////////////////////
 
         function convertToServer(node) {

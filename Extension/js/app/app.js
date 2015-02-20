@@ -8,11 +8,12 @@
     var app = angular.module('histree', ['ui.tree', 'ui.bootstrap']);
 
     app.value('projectName', 'Breadcrumb');
-    app.value('baseUrl', 'http://210.118.74.170:9000/');
+    //app.value('baseUrl', 'http://210.118.74.170:9000/'); // SECMEM
+    app.value('baseUrl', 'http://175.212.107.61:9000/'); // House
     app.value('defaultBlacklist', ['http://*bank*, http://*privacy*, http://*account*, http://*my*page*']);
     //app.value('baseUrl', 'http://121.135.191.219:9000/')
 
-    app.run(['$modal', '$log', 'accountService', 'Com', function ($modal, $log, accountService, Com) {
+    app.run(['$modal', '$log', 'account', 'Com', function ($modal, $log, account, Com) {
         initService();
 
         /////////////////////////////
@@ -21,12 +22,13 @@
             // [Breadcrumb]
             //return;
 
-            var userInfo = accountService.getUserInfo();
+            var userInfo = account.getUserInfo();
 
             if (userInfo.token) {
                 console.log("You have a token");
                 console.log(userInfo.token);
-                Com.requestTree(userInfo.token);
+                // [BreadCrumb] Server Communication start --
+                Com.initTreeService(userInfo.token);
             }
             else {
                 console.log("You don't have a token");

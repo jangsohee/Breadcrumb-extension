@@ -9,12 +9,12 @@
         .module('histree')
         .controller('LoginModalInstanceCtrl', LoginModalInstanceCtrl);
 
-    LoginModalInstanceCtrl.$inject = ['$scope', '$modal', '$modalInstance', '$http', '$q', 'accountService', 'Com', 'baseUrl'];
+    LoginModalInstanceCtrl.$inject = ['$scope', '$modal', '$modalInstance', '$http', '$q', 'account', 'Com', 'baseUrl'];
 
-    function LoginModalInstanceCtrl($scope, $modal, $modalInstance, $http, $q, accountService, Com, baseUrl) {
+    function LoginModalInstanceCtrl($scope, $modal, $modalInstance, $http, $q, account, Com, baseUrl) {
         var vm = this;
 
-        vm.account = {
+        vm.accountInfo = {
             email: '',
             password: ''
         };
@@ -45,7 +45,8 @@
             if ($scope.form.loginForm.$valid) {
                 vm.submitLbl = "Process...";
 
-                return login(vm.account)
+
+                return login(vm.accountInfo)
                     .then(function (userInfo) {
                         $modalInstance.close();
                         return userInfo;
@@ -63,13 +64,14 @@
         }
 
 
-        function login(account) {
-            var promise = accountService.login(account);
-            console.log(promise);
+        function login(accountInfo) {
+            var promise = account.login(accountInfo);
+
+
             return promise
                 .then(function (userInfo) {
                     // [BreadCrumb] Server Communication start --
-                    Com.requestTree(userInfo.token);
+                    Com.initTreeService(userInfo.token);
                     return userInfo;
                 })
                 .catch(function () {

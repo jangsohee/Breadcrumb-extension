@@ -11,6 +11,8 @@
 
     Blacklist.$inject = [ 'defaultBlacklist' ];
 
+
+    // TODO: 빈 문자열을 null로 처리하자.
     function Blacklist(defaultBlacklist) {
         var blacklist;
 
@@ -46,11 +48,14 @@
         };
 
         return service;
+
         /////////////////////////////////
 
         function stringfy(arr) {
             var stringSet;
             stringSet = arr.join(', ');
+
+
             return stringSet;
         }
 
@@ -60,6 +65,7 @@
             angular.forEach(arraySet, function (value, key) {
                 this[key] = this[key].trim();
             }, arraySet);
+
 
             return arraySet;
         }
